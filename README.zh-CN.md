@@ -7,13 +7,15 @@
 
 一个面向授权 Android 逆向分析的轻量终端工具包。它不是 Agent 框架、反编译器，也不是需要常驻加载的大型 MCP 工具集合。
 
-## v0.2.0：六个命令
+## 命令
 
 | 命令 | 功能 |
 |---|---|
 | `fingerprint` | 流式计算文件 SHA-256 和大小 |
 | `search-exports` | 有限长度文本检索，附文件和行号；不是语义引用 |
 | `summarize-events` | JSONL 基本事件校验与计数 |
+| `locate-dex` | 查找定义或提及某个类或字符串的根 DEX | 调用图或运行时使用 |
+| `scope-apk` | 生成只含所选根 DEX 的分析用 APK | 可安装或完整的 APK |
 | `generate-java-hook` | 生成精确 Java 重载的探针源码 |
 | `generate-native-hook` | 生成模块/符号或偏移探针，记录原始参数、返回值和有限二进制快照 |
 | `run` | 明确指定传输与目标的 Frida spawn/attach、消息采集及清理 |

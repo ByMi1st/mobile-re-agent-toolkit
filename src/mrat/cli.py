@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from .dex import locate_dex
+from .dex import locate_dex, scope_apk
 from .java_hook import generate_java_hook
 from .model import JavaMethodSpec, ProbeContext
 from .native_hook import NativeProbeSpec, generate_native_hook
@@ -55,6 +55,10 @@ def build_parser() -> argparse.ArgumentParser:
     locate_query = locate.add_mutually_exclusive_group(required=True)
     locate_query.add_argument("--class", dest="class_name")
     locate_query.add_argument("--text")
+    scope = subparsers.add_parser("scope-apk", help="write an analysis-only APK with selected root DEX files")
+    scope.add_argument("apk", type=Path)
+    scope.add_argument("--dex", action="append", required=True)
+    scope.add_argument("--out", type=Path, required=True)
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -78,6 +82,10 @@ def _run(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "locate-dex":
         result = locate_dex(args.apk, class_name=args.class_name, text=args.text)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "scope-apk":
+        result = scope_apk(args.apk, args.out, args.dex)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":

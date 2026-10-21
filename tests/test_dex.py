@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
 from mrat.cli import main
-from mrat.dex import class_descriptor, locate_dex
+from mrat.dex import class_descriptor, locate_dex, scope_apk
 
 
 def build_dex(classes=(), extra_strings=()):
@@ -128,3 +128,50 @@ class LocateCliTest(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 main(['locate-dex', str(self.apk), '--class', 'a.B', '--text', 'x'])
+
+
+class ScopeApkTest(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.apk = self.root / 'sample.apk'
+        write_apk(self.apk, {
+            'AndroidManifest.xml': b'manifest',
+            'classes.dex': build_dex(classes=['Lcom/example/App;']),
+            'classes2.dex': build_dex(classes=['Lcom/example/Other;']),
+            'res/readme.txt': b'resource',
+        })
+
+    def test_keeps_selected_dex_and_manifest_only(self):
+        out = self.root / 'scoped.apk'
+        result = scope_apk(self.apk, out, ['classes2.dex'])
+        self.assertEqual(result['included'], ['AndroidManifest.xml', 'classes2.dex'])
+        self.assertEqual(result['excluded_entry_count'], 2)
+        with zipfile.ZipFile(out) as archive:
+            self.assertEqual(sorted(archive.namelist()), ['AndroidManifest.xml', 'classes2.dex'])
+            self.assertEqual(archive.read('classes2.dex'), build_dex(classes=['Lcom/example/Other;']))
+
+    def test_refuses_to_overwrite_existing_output(self):
+        out = self.root / 'scoped.apk'
+        out.write_bytes(b'keep')
+        with self.assertRaises(FileExistsError):
+            scope_apk(self.apk, out, ['classes.dex'])
+        self.assertEqual(out.read_bytes(), b'keep')
+
+    def test_rejects_unknown_or_non_root_entries(self):
+        with self.assertRaises(ValueError):
+            scope_apk(self.apk, self.root / 'a.apk', ['classes9.dex'])
+        with self.assertRaises(ValueError):
+            scope_apk(self.apk, self.root / 'b.apk', ['res/readme.txt'])
+        with self.assertRaises(ValueError):
+            scope_apk(self.apk, self.root / 'c.apk', [])
+
+    def test_cli_writes_scoped_apk(self):
+        out = self.root / 'cli.apk'
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = main(['scope-apk', str(self.apk), '--dex', 'classes.dex', '--out', str(out)])
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(buffer.getvalue())['included'], ['AndroidManifest.xml', 'classes.dex'])
+        self.assertTrue(out.is_file())

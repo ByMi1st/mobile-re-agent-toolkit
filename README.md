@@ -8,13 +8,15 @@ English | [简体中文](README.zh-CN.md)
 A small, terminal-first toolkit for authorized Android reverse-engineering work.
 It is not an agent framework, decompiler, or large MCP tool catalog.
 
-## v0.2.0: six commands
+## Commands
 
 | Command | Purpose |
 |---|---|
 | `fingerprint` | Stream local file SHA-256 and size |
 | `search-exports` | Bounded literal search with file/line evidence, not semantic xref |
 | `summarize-events` | Basic JSONL envelope checks and event counts |
+| `locate-dex` | Find root DEX entries that define or mention a class or string | Call graphs or runtime use |
+| `scope-apk` | Write an analysis-only APK with selected root DEX files | An installable or complete APK |
 | `generate-java-hook` | Exact Java overload probe source generation |
 | `generate-native-hook` | Module/symbol or offset probe, raw entry/return and bounded binary snapshots |
 | `run` | Explicit local/device/remote Frida spawn or attach, messages and cleanup |

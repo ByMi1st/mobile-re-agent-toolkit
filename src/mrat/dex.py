@@ -107,3 +107,35 @@ def locate_dex(apk: Path, *, class_name: str | None = None, text: str | None = N
             'references means the descriptor string appears in the DEX, not a call graph',
         ],
     }
+
+
+def scope_apk(apk: Path, out: Path, dex_names: list[str]) -> dict:
+    if not dex_names:
+        raise ValueError('select at least one DEX entry')
+    with _open_apk(apk) as source:
+        available = {info.filename for info in source.infolist()}
+        root = set(_root_dex_names(source))
+        missing = [name for name in dex_names if name not in root]
+        if missing:
+            raise ValueError(f'not root DEX entries in APK: {missing}')
+        keep = list(dict.fromkeys(dex_names))
+        if 'AndroidManifest.xml' in available:
+            keep.insert(0, 'AndroidManifest.xml')
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with out.open('xb') as handle, zipfile.ZipFile(handle, 'w', zipfile.ZIP_DEFLATED) as target:
+            for name in keep:
+                target.writestr(name, source.read(name))
+        excluded = len(available) - len(keep)
+    return {
+        'schema_version': 1,
+        'operation': 'scope_apk',
+        'source': fingerprint(apk),
+        'output': fingerprint(out),
+        'included': keep,
+        'excluded_entry_count': excluded,
+        'limitations': [
+            'scoped APK keeps selected DEX files and AndroidManifest.xml only',
+            'resources, native libraries and signatures are excluded; not installable',
+            'a scoped APK narrows analysis input; it does not prove absence of references elsewhere',
+        ],
+    }
