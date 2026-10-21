@@ -3,6 +3,8 @@
 [![Tests](https://github.com/ByMi1st/mobile-re-agent-toolkit/actions/workflows/tests.yml/badge.svg)](https://github.com/ByMi1st/mobile-re-agent-toolkit/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 
+English | [简体中文](README.zh-CN.md)
+
 A small, terminal-first toolkit for authorized Android reverse-engineering work.
 It is not an agent framework, decompiler, or large MCP tool catalog.
 
