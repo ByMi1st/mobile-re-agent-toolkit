@@ -2,12 +2,12 @@
 
 Repository: https://github.com/ByMi1st/mobile-re-agent-toolkit
 
-v0.2.0 includes six CLI commands, optional Frida bindings and a synthetic native
+The current tree includes the v0.2.0 commands and later unreleased commands, optional Frida bindings and a synthetic native
 end-to-end fixture. No IDA/Unicorn/private tool migration is planned.
 
 Before calling a release verified, check:
 
-- Unit/synthetic JS tests, isolated install and six CLI command entry points.
+- Unit/synthetic JS tests, isolated install and CLI command entry points.
 - Real native fixture under the claimed host/Frida combination.
 - Script errors, setup failure, message limits, binary preservation and cleanup.
 - Published tree matches the tested local tree.

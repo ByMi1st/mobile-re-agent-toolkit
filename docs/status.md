@@ -1,15 +1,38 @@
 # Implementation status
 
-v0.2.0 ships six commands: four offline/source-generation utilities plus
-`generate-native-hook` and `run`. It includes binary Frida message persistence,
-explicit target/transport selection, finite capture/cleanup, native module load
-observation and bounded snapshots. See runtime.md for effects and limitations.
+Unreleased commands (after v0.2.0): `locate-dex`, `scope-apk`, `decompile-class`,
+`xref-method`, `ida-run`, `diff-binary`. v0.2.0 shipped `fingerprint`,
+`search-exports`, `summarize-events`, `generate-java-hook`, `generate-native-hook`
+and `run`.
 
-Host tests cover normal and failed setup, ownership-aware cleanup, binary
-truncation, event/message limits, cancellation, required readiness, and synthetic
-JS native/Java behavior. They do not establish real Frida compatibility.
-Real-provider results and failures are recorded separately in verification.md.
+## Implemented and host-tested
 
-IDA/Unicorn migration, private JAR redistribution, system tracing, interception
-bypasses, RPC, automatic bridge installation, whole-process tracing and target
-algorithms remain outside scope. Java runtime discovery is not implemented.
+- File SHA-256 and size; ELF section comparison for two binaries.
+- Bounded literal search over local text exports.
+- Root DEX location by class descriptor or string table; analysis-only APK scoping.
+- jadx single-class decompilation wrapper and xref-jar wrapper; both require the
+  operator to supply the tool. Tests use stub executables.
+- Headless IDA batch wrapper; tests use a stub executable.
+- JSONL envelope validation and event counts.
+- Exact-overload Java probe generation; generic Frida runner; bounded native
+  Interceptor probe generation.
+
+## Verified only with stubs or synthetic data
+
+- jadx: the wrapper is tested with stubs. A real-jadx check runs only when
+  MRAT_TEST_APK and MRAT_TEST_CLASS are set. The synthetic DEX in the test suite is
+  rejected by jadx, so a real sample is needed for that check.
+- IDA: not available in this environment; `ida-run` has no real-IDA test.
+- Frida: real-provider lanes are recorded in verification.md; Android devices are not tested.
+
+## Not implemented
+
+- Java runtime discovery (classes, class loaders, overloads).
+- Native build identity verification.
+- Semantic cross-reference adapter for ASC or other tools.
+- System tracing, interception bypasses, RPC, automatic bridge installation.
+
+## Outside this repository
+
+Private application analysis scripts, target-specific algorithms, company
+tooling, captured traffic and device profiles.
