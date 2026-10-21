@@ -65,3 +65,15 @@ bundles 1.5.3. The pin is now 1.5.3. After that, all four subcommands matched th
 original jar byte for byte in both lazy and full modes, except `inspect-class`, which
 now always uses the full index because lazy loading changed its method list. The
 test suite covers the server with a stub process.
+
+## Code-scan fallback
+
+2026-10-21. `xrefs-to-system-api` decompiles every class to scan for callers of a
+system class, which costs about 8 s on drillbeam.apk (6,657 classes) in one-shot mode.
+In server mode the first query costs the same, and later queries took 0.03 to 0.05 s,
+because jadx keeps decompiled classes in memory.
+
+Parallel preloading looked faster (8.2 s to 4.6 s for `xrefs-to-class` in full mode),
+but it changed output: `inspect-class` gained an implicit constructor, and the result
+varied with the build. It was rejected and reverted. Sequential preloading matches the
+original jar for all six regression cases in default, full and server modes.
