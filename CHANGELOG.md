@@ -7,6 +7,7 @@
 - Added `decompile-class`, a timeout-bounded wrapper around the jadx CLI.
 - Added `xref-method`, a wrapper for a user-supplied jadx xref jar; the jar is not bundled.
 - Added `ida-run`, a headless IDA batch wrapper that records log and database hashes.
+- Added `diff-binary` for hash and ELF section comparison between two binaries.
 
 ## 0.2.0 — 2026-10-21
 

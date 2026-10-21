@@ -6,6 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .binary_diff import diff_binary
 from .decompile import decompile_class
 from .ida import ida_run
 from .xref import xref_method
@@ -83,6 +84,9 @@ def build_parser() -> argparse.ArgumentParser:
     ida.add_argument("--log", type=Path, required=True)
     ida.add_argument("--idat")
     ida.add_argument("--timeout", type=float, default=1800.0)
+    diff = subparsers.add_parser("diff-binary", help="compare two binaries by hash and ELF section")
+    diff.add_argument("old", type=Path)
+    diff.add_argument("new", type=Path)
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -123,6 +127,10 @@ def _run(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "ida-run":
         result = ida_run(args.database, args.script, args.log, idat=args.idat, timeout=args.timeout)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "diff-binary":
+        result = diff_binary(args.old, args.new)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":

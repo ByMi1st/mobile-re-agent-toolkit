@@ -19,6 +19,7 @@
 | `decompile-class` | 调用用户提供的 jadx CLI 反编译单个类，带超时与安全参数 | 原始源码；反编译结果的正确性 |
 | `xref-method` | 使用用户自备的 xref jar 列出单个方法的静态引用 | 运行时调用；反射与动态分派 |
 | `ida-run` | 在数据库上运行 IDA 无头批处理脚本，记录日志与数据库前后哈希 | IDA 本身；脚本的结果 |
+| `diff-binary` | 按哈希比较两个二进制；ELF 文件额外按节比较哈希与大小 | 行为差异；变化原因 |
 | `generate-java-hook` | 生成精确 Java 重载的探针源码 |
 | `generate-native-hook` | 生成模块/符号或偏移探针，记录原始参数、返回值和有限二进制快照 |
 | `run` | 明确指定传输与目标的 Frida spawn/attach、消息采集及清理 |

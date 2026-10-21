@@ -20,6 +20,7 @@ It is not an agent framework, decompiler, or large MCP tool catalog.
 | `decompile-class` | Decompile one class with a user-supplied jadx CLI, with timeout and safe flags | Original source; correctness of decompiled code |
 | `xref-method` | List static references to one method using a user-supplied xref jar | Runtime calls; reflection and dynamic dispatch |
 | `ida-run` | Run an IDA headless batch script on a database and record log and database hashes | IDA itself; the script's results |
+| `diff-binary` | Compare two binaries by hash and, for ELF, section hashes and sizes | Behavioral differences; cause of a change |
 | `generate-java-hook` | Exact Java overload probe source generation |
 | `generate-native-hook` | Module/symbol or offset probe, raw entry/return and bounded binary snapshots |
 | `run` | Explicit local/device/remote Frida spawn or attach, messages and cleanup |
