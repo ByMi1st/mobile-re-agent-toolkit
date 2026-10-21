@@ -16,6 +16,7 @@
 | `summarize-events` | JSONL 基本事件校验与计数 |
 | `locate-dex` | 查找定义或提及某个类或字符串的根 DEX | 调用图或运行时使用 |
 | `scope-apk` | 生成只含所选根 DEX 的分析用 APK | 可安装或完整的 APK |
+| `decompile-class` | 调用用户提供的 jadx CLI 反编译单个类，带超时与安全参数 | 原始源码；反编译结果的正确性 |
 | `generate-java-hook` | 生成精确 Java 重载的探针源码 |
 | `generate-native-hook` | 生成模块/符号或偏移探针，记录原始参数、返回值和有限二进制快照 |
 | `run` | 明确指定传输与目标的 Frida spawn/attach、消息采集及清理 |

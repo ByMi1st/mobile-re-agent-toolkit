@@ -4,6 +4,7 @@
 
 - Added `locate-dex` to find root DEX entries that define or mention a class or string.
 - Added `scope-apk` to write an analysis-only APK containing selected root DEX files.
+- Added `decompile-class`, a timeout-bounded wrapper around the jadx CLI.
 
 ## 0.2.0 — 2026-10-21
 

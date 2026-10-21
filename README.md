@@ -17,6 +17,7 @@ It is not an agent framework, decompiler, or large MCP tool catalog.
 | `summarize-events` | Basic JSONL envelope checks and event counts |
 | `locate-dex` | Find root DEX entries that define or mention a class or string | Call graphs or runtime use |
 | `scope-apk` | Write an analysis-only APK with selected root DEX files | An installable or complete APK |
+| `decompile-class` | Decompile one class with a user-supplied jadx CLI, with timeout and safe flags | Original source; correctness of decompiled code |
 | `generate-java-hook` | Exact Java overload probe source generation |
 | `generate-native-hook` | Module/symbol or offset probe, raw entry/return and bounded binary snapshots |
 | `run` | Explicit local/device/remote Frida spawn or attach, messages and cleanup |

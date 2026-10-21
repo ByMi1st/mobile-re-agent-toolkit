@@ -6,6 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .decompile import decompile_class
 from .dex import locate_dex, scope_apk
 from .java_hook import generate_java_hook
 from .model import JavaMethodSpec, ProbeContext
@@ -59,6 +60,12 @@ def build_parser() -> argparse.ArgumentParser:
     scope.add_argument("apk", type=Path)
     scope.add_argument("--dex", action="append", required=True)
     scope.add_argument("--out", type=Path, required=True)
+    decompile = subparsers.add_parser("decompile-class", help="decompile one class with the jadx CLI")
+    decompile.add_argument("apk", type=Path)
+    decompile.add_argument("class_name")
+    decompile.add_argument("--out", type=Path, required=True)
+    decompile.add_argument("--jadx")
+    decompile.add_argument("--timeout", type=float, default=300.0)
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -86,6 +93,10 @@ def _run(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "scope-apk":
         result = scope_apk(args.apk, args.out, args.dex)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "decompile-class":
+        result = decompile_class(args.apk, args.class_name, args.out, jadx=args.jadx, timeout=args.timeout)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":
