@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from .decompile import decompile_class
+from .xref import xref_method
 from .dex import locate_dex, scope_apk
 from .java_hook import generate_java_hook
 from .model import JavaMethodSpec, ProbeContext
@@ -66,6 +67,15 @@ def build_parser() -> argparse.ArgumentParser:
     decompile.add_argument("--out", type=Path, required=True)
     decompile.add_argument("--jadx")
     decompile.add_argument("--timeout", type=float, default=300.0)
+    xref = subparsers.add_parser("xref-method", help="list static references to a method via a user-supplied jar")
+    xref.add_argument("apk", type=Path)
+    xref.add_argument("class_name")
+    xref.add_argument("method_name")
+    xref.add_argument("--jar", type=Path, required=True)
+    xref.add_argument("--out", type=Path, required=True)
+    xref.add_argument("--java")
+    xref.add_argument("--heap", default="4g")
+    xref.add_argument("--timeout", type=float, default=600.0)
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -97,6 +107,11 @@ def _run(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "decompile-class":
         result = decompile_class(args.apk, args.class_name, args.out, jadx=args.jadx, timeout=args.timeout)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "xref-method":
+        result = xref_method(args.apk, args.class_name, args.method_name, args.out, jar=args.jar,
+                             java=args.java, heap=args.heap, timeout=args.timeout)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":
