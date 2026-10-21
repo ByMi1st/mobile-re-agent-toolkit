@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from .static.binary_diff import diff_binary
 from .static.decompile import decompile_class
 from .static.ida import ida_run
-from .static.xref import xref_method
+from .static.xref import XrefServer, xref_method
 from .static.dex import locate_dex, scope_apk
 from .runtime.java_hook import generate_java_hook
 from .core.model import JavaMethodSpec, ProbeContext
@@ -87,6 +88,11 @@ def build_parser() -> argparse.ArgumentParser:
     diff = subparsers.add_parser("diff-binary", help="compare two binaries by hash and ELF section")
     diff.add_argument("old", type=Path)
     diff.add_argument("new", type=Path)
+    serve = subparsers.add_parser("xref-serve", help="answer xref queries for one APK from JSON lines on stdin")
+    serve.add_argument("apk", type=Path)
+    serve.add_argument("--jar", type=Path)
+    serve.add_argument("--java")
+    serve.add_argument("--heap", default="4g")
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -132,6 +138,18 @@ def _run(argv: list[str] | None = None) -> int:
     if args.command == "diff-binary":
         result = diff_binary(args.old, args.new)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "xref-serve":
+        with XrefServer(args.apk, jar=args.jar, java=args.java, heap=args.heap) as server:
+            for line in sys.stdin:
+                if not line.strip():
+                    continue
+                try:
+                    argv = json.loads(line)["argv"]
+                    response = server.query(argv)
+                except (ValueError, KeyError, TypeError) as error:
+                    response = {"exit": 2, "error": f"bad request: {error}"}
+                print(json.dumps(response, ensure_ascii=False), flush=True)
         return 0
     if args.command == "run":
         spec = RunSpec(script=args.script, out=args.out, duration=args.duration,

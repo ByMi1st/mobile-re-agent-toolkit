@@ -1,11 +1,13 @@
 """Run a user-supplied jadx cross-reference jar for one method, with recorded output."""
 from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
 import subprocess
 import tempfile
+import threading
 from pathlib import Path
 
 from ..core.offline import fingerprint
@@ -72,3 +74,54 @@ def xref_method(apk: Path, class_name: str, method_name: str, out: Path, *, jar:
             'reflection, dynamic loading and interface dispatch may be missed',
         ],
     }
+
+
+class XrefServer:
+    def __init__(self, apk: Path, *, jar: Path | None = None, java: str | None = None,
+                 heap: str = '4g') -> None:
+        if not re.fullmatch(r'\d+[gGmM]', heap):
+            raise ValueError('heap must look like 4g or 512m')
+        self.jar = resolve_jar(jar)
+        self.java = resolve_java(java)
+        self._stderr = tempfile.TemporaryFile()
+        self._cache = tempfile.mkdtemp(prefix='mrat-xref-cache-')
+        self._process = subprocess.Popen(
+            [self.java, f'-Xmx{heap}', '-jar', str(self.jar), 'serve', '-d', str(apk)],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self._stderr, text=True,
+            encoding='utf-8', env=dict(os.environ, XDG_CACHE_HOME=self._cache))
+
+    def query(self, argv: list[str], timeout: float = 600.0) -> dict:
+        if self._process.poll() is not None:
+            raise RuntimeError('xref server is not running')
+        killer = threading.Timer(timeout, self._process.kill)
+        killer.start()
+        try:
+            self._process.stdin.write(json.dumps({'argv': argv}) + '\n')
+            self._process.stdin.flush()
+            line = self._process.stdout.readline()
+        finally:
+            killer.cancel()
+        if not line:
+            raise RuntimeError(f'xref server stopped; {self._stderr_tail()}')
+        return json.loads(line)
+
+    def close(self) -> None:
+        if self._process.poll() is None:
+            self._process.stdin.close()
+            try:
+                self._process.wait(timeout=30)
+            except subprocess.TimeoutExpired:
+                self._process.kill()
+                self._process.wait()
+        shutil.rmtree(self._cache, ignore_errors=True)
+        self._stderr.close()
+
+    def _stderr_tail(self) -> str:
+        self._stderr.seek(0)
+        return self._stderr.read().decode('utf-8', errors='replace').strip()[-400:]
+
+    def __enter__(self) -> 'XrefServer':
+        return self
+
+    def __exit__(self, *exc_info) -> None:
+        self.close()

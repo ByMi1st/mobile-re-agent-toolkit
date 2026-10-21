@@ -8,11 +8,12 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
 from mrat.cli import main
-from mrat.static.xref import xref_method
+from mrat.static.xref import XrefServer, xref_method
 
 
 def write_java_stub(directory, record, *, exit_code=0, sleep=0):
@@ -115,6 +116,52 @@ class XrefMethodTest(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn('exit 6', json.loads(buffer.getvalue())['error'])
 
+
+
+def write_server_stub(directory, *, exit_immediately=False):
+    stub = Path(directory) / 'server-stub'
+    body = ('import sys\nsys.exit(3)\n' if exit_immediately else
+            'import json, sys\n'
+            'for line in sys.stdin:\n'
+            '    request = json.loads(line)\n'
+            '    print(json.dumps({"exit": 0, "stdout": " ".join(request["argv"]), "stderr": ""}), flush=True)\n')
+    stub.write_text('#!/usr/bin/env python3\n' + body, encoding='utf-8')
+    stub.chmod(stub.stat().st_mode | stat.S_IEXEC)
+    return stub
+
+
+class XrefServerTest(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.apk = self.root / 'sample.apk'
+        self.apk.write_bytes(b'placeholder')
+        self.jar = self.root / 'xref.jar'
+        self.jar.write_bytes(b'stub')
+
+    def test_answers_several_queries_from_one_process(self):
+        stub = write_server_stub(self.root)
+        with XrefServer(self.apk, jar=self.jar, java=str(stub)) as server:
+            first = server.query(['xrefs-to-method', '-c', 'A', '-m', 'b'])
+            second = server.query(['inspect-class', '-c', 'A'])
+        self.assertEqual(first, {'exit': 0, 'stdout': 'xrefs-to-method -c A -m b', 'stderr': ''})
+        self.assertEqual(second['stdout'], 'inspect-class -c A')
+
+    def test_dead_server_is_reported(self):
+        stub = write_server_stub(self.root, exit_immediately=True)
+        with XrefServer(self.apk, jar=self.jar, java=str(stub)) as server:
+            with self.assertRaises(RuntimeError):
+                server.query(['xrefs-to-method', '-c', 'A', '-m', 'b'])
+
+    def test_xref_serve_command_forwards_requests(self):
+        stub = write_server_stub(self.root)
+        requests = '{"argv": ["inspect-class", "-c", "A"]}\n\n'
+        buffer = io.StringIO()
+        with mock.patch('sys.stdin', io.StringIO(requests)), contextlib.redirect_stdout(buffer):
+            code = main(['xref-serve', str(self.apk), '--jar', str(self.jar), '--java', str(stub)])
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(buffer.getvalue())['stdout'], 'inspect-class -c A')
 
 if __name__ == '__main__':
     unittest.main()
