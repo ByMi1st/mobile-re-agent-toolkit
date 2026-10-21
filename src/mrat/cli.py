@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from .decompile import decompile_class
+from .ida import ida_run
 from .xref import xref_method
 from .dex import locate_dex, scope_apk
 from .java_hook import generate_java_hook
@@ -76,6 +77,12 @@ def build_parser() -> argparse.ArgumentParser:
     xref.add_argument("--java")
     xref.add_argument("--heap", default="4g")
     xref.add_argument("--timeout", type=float, default=600.0)
+    ida = subparsers.add_parser("ida-run", help="run an IDA headless batch script on a database")
+    ida.add_argument("database", type=Path)
+    ida.add_argument("--script", type=Path, required=True)
+    ida.add_argument("--log", type=Path, required=True)
+    ida.add_argument("--idat")
+    ida.add_argument("--timeout", type=float, default=1800.0)
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -112,6 +119,10 @@ def _run(argv: list[str] | None = None) -> int:
     if args.command == "xref-method":
         result = xref_method(args.apk, args.class_name, args.method_name, args.out, jar=args.jar,
                              java=args.java, heap=args.heap, timeout=args.timeout)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    if args.command == "ida-run":
+        result = ida_run(args.database, args.script, args.log, idat=args.idat, timeout=args.timeout)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     if args.command == "run":

@@ -6,6 +6,7 @@
 - Added `scope-apk` to write an analysis-only APK containing selected root DEX files.
 - Added `decompile-class`, a timeout-bounded wrapper around the jadx CLI.
 - Added `xref-method`, a wrapper for a user-supplied jadx xref jar; the jar is not bundled.
+- Added `ida-run`, a headless IDA batch wrapper that records log and database hashes.
 
 ## 0.2.0 — 2026-10-21
 
