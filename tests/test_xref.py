@@ -1,6 +1,7 @@
 import contextlib
 import io
 import json
+import os
 import stat
 import sys
 import tempfile
@@ -67,6 +68,20 @@ class XrefMethodTest(unittest.TestCase):
             xref_method(self.apk, 'com.example.App', 'target', self.root / 'x.txt', jar=self.jar,
                         java=str(stub), timeout=0.5)
         self.assertIn('timed out', str(caught.exception))
+
+    def test_jar_comes_from_environment_when_flag_is_absent(self):
+        stub = write_java_stub(self.root, self.record)
+        out = self.root / 'env.txt'
+        old = os.environ.get('MRAT_XREF_JAR')
+        os.environ['MRAT_XREF_JAR'] = str(self.jar)
+        try:
+            result = xref_method(self.apk, 'com.example.App', 'target', out, java=str(stub))
+        finally:
+            if old is None: os.environ.pop('MRAT_XREF_JAR', None)
+            else: os.environ['MRAT_XREF_JAR'] = old
+        self.assertEqual(result['jar']['size_bytes'], self.jar.stat().st_size)
+        args = self.record.read_text(encoding='utf-8').splitlines()
+        self.assertIn(str(self.jar), args)
 
     def test_missing_jar_and_java_are_reported(self):
         with self.assertRaises(RuntimeError):

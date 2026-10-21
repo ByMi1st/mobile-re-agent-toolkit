@@ -102,7 +102,8 @@ This repository does not ship jadx, IDA, Frida, an xref jar, or any application
 samples. You install or obtain them yourself, and you are responsible for their
 licenses and versions. Pass their paths explicitly, for example `--jadx`, `--jar`,
 `--idat` or `--java`. If you leave a flag out, the command looks for the tool on
-your `PATH` and fails clearly when it is not there.
+your `PATH` and fails clearly when it is not there. The xref jar can also be set
+once with the `MRAT_XREF_JAR` environment variable.
 
 ## What it can and cannot establish
 

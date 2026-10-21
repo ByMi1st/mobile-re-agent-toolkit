@@ -73,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     xref.add_argument("apk", type=Path)
     xref.add_argument("class_name")
     xref.add_argument("method_name")
-    xref.add_argument("--jar", type=Path, required=True)
+    xref.add_argument("--jar", type=Path)
     xref.add_argument("--out", type=Path, required=True)
     xref.add_argument("--java")
     xref.add_argument("--heap", default="4g")

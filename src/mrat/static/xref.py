@@ -21,7 +21,14 @@ def resolve_java(explicit: str | None) -> str:
     return candidate
 
 
-def xref_method(apk: Path, class_name: str, method_name: str, out: Path, *, jar: Path,
+def resolve_jar(explicit: Path | None) -> Path:
+    candidate = explicit or (Path(os.environ['MRAT_XREF_JAR']) if os.environ.get('MRAT_XREF_JAR') else None)
+    if candidate is None or not candidate.is_file():
+        raise RuntimeError('xref jar not found; pass --jar PATH or set MRAT_XREF_JAR to a jar you own')
+    return candidate
+
+
+def xref_method(apk: Path, class_name: str, method_name: str, out: Path, *, jar: Path | None = None,
                 java: str | None = None, heap: str = '4g', timeout: float = 600.0) -> dict:
     if not CLASS_NAME.fullmatch(class_name):
         raise ValueError(f'class must be a dotted name: {class_name!r}')
@@ -31,8 +38,7 @@ def xref_method(apk: Path, class_name: str, method_name: str, out: Path, *, jar:
         raise ValueError('heap must look like 4g or 512m')
     if not 0 < timeout <= 7200:
         raise ValueError('timeout must be within (0, 7200] seconds')
-    if not Path(jar).is_file():
-        raise RuntimeError('xref jar not found; pass --jar PATH to a jadx xref jar you own')
+    jar = resolve_jar(jar)
     if out.exists():
         raise FileExistsError(f'output already exists: {out}')
     executable = resolve_java(java)

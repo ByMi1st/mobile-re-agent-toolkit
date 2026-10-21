@@ -89,7 +89,7 @@ mrat generate-java-hook \
 
 ## 自备的工具
 
-仓库不附带 jadx、IDA、Frida、xref.jar 或任何应用样本。你需要自己安装或获取它们，并负责它们的许可证和版本。通过 `--jadx`、`--jar`、`--idat`、`--java` 等参数显式指定路径；如果不传，命令会去 `PATH` 里找，找不到就明确报错。
+仓库不附带 jadx、IDA、Frida、xref.jar 或任何应用样本。你需要自己安装或获取它们，并负责它们的许可证和版本。通过 `--jadx`、`--jar`、`--idat`、`--java` 等参数显式指定路径；如果不传，命令会去 `PATH` 里找，找不到就明确报错。xref.jar 也可以用环境变量 `MRAT_XREF_JAR` 设置一次。
 
 ## 能证明什么，不能证明什么
 
