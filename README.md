@@ -124,6 +124,21 @@ your `PATH` and fails clearly when it is not there.
 - [Status](docs/reference/status.md): what is implemented, tested with stubs or synthetic data, or not built yet.
 - [Architecture](docs/reference/architecture.md) and [roadmap](docs/reference/roadmap.md).
 
+## Repository layout
+
+```text
+src/mrat/
+  cli.py          command-line entry point
+  core/           models and offline utilities: hashing, search, JSONL checks
+  static/         DEX location, decompilation, xrefs, IDA runs, binary diff
+  runtime/        probe generators and the Frida runner
+docs/guides/      how-to guides: workflow, runtime, setup
+docs/reference/   status, architecture, roadmap, verification, checklist
+examples/         synthetic fixtures only
+scripts/          real-provider verification scripts
+tests/            unit and synthetic tests
+```
+
 ## Development
 
 ```bash
