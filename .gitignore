@@ -14,3 +14,4 @@ secrets.local.json
 
 # Maven build output for tools/xref
 target/
+dependency-reduced-pom.xml
