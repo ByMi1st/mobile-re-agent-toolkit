@@ -1,6 +1,6 @@
 # Setup and reproducibility
 
-Python 3.10+ is required. Runtime commands use the Python standard library.
+Python 3.10+ is required. Offline commands use the Python standard library; runtime capture uses the optional Frida dependency.
 Installing from source uses setuptools>=69 as a build dependency, so the first
 installation may require network access or a prepopulated package cache.
 
@@ -37,11 +37,17 @@ aggregate read limit and 30 matching lines. Returned line previews are bounded.
 Complete coverage refers only to selected readable text files within that scope.
 
 Offline command outputs are JSON. Hook generation writes JavaScript and prints
-the output filename. Exit 0 means command success; 1 means invalid JSONL records
-were found; 2 means invalid arguments, unreadable input or output failure.
+the output filename. Offline commands exit 0 on success, 1 when invalid JSONL records are found, and
+2 for invalid arguments, unreadable input or output failure. `run` exit codes are
+described in runtime.md.
 Hashing a file does not validate its provenance; basic event validation does
-not establish capture completeness.
+not establish capture completeness. Runtime effects and exit codes are described in runtime.md.
 
 Use an explicit --out path for probe generation. Existing output files are
 replaced. No command uploads data. Paths in JSON results may contain local
 filenames: review results before sharing them publicly.
+
+## Optional runtime
+
+Install `python -m pip install ".[runtime]"` and read [runtime.md](runtime.md).
+The runner never installs a device server or changes ADB forwarding.

@@ -1,24 +1,51 @@
 # Roadmap
 
-## v0.1.0
+## Milestone 1: contracts and generation
 
-- File SHA-256 and size.
-- Local text-export search with visible limits.
-- JSONL envelope summaries.
-- Exact-overload Java probe generation.
-- Installation instructions, synthetic examples, tests and CI.
+- [x] Public scope and safety boundaries
+- [x] Java method specification
+- [x] Structured Java Hook generator
+- [x] Deterministic unit tests
+- [ ] JSON Schema for runtime events
 
-## Next: generic Frida Runner
+## Milestone 2: runtime discovery
 
-Explicit target selection; attach/spawn/load/resume; text and binary messages;
-timeouts, target exit, cancellation and cleanup. Add lifecycle tests first,
-then real fixtures. Reuse independently distributable logic where appropriate.
+- [ ] Enumerate loaded classes and class loaders
+- [ ] Search methods and overloads by keyword
+- [ ] Locate live objects without retaining them indefinitely
+- [ ] Emit structured discovery results
 
-## Later: native probe generation
+## Milestone 3: lifecycle runner
 
-Module/build identity, exact function selection, bounded argument/return memory
-observations and backtraces. Require synthetic and real fixture verification.
+- [x] Explicit serial/package/process selection (serial or remote endpoint plus PID or spawn; package is a spawn argument)
+- [x] Attach and suspended-spawn modes
+- [x] JSONL message collection and timeout handling
+- [ ] Detach, port-forward and temporary-file cleanup
 
-No commitment to an agent platform, MCP server, RPC service, decompiler wrappers,
-IDA/Unicorn migration or system tracing. Additions require a demonstrated use
-case rather than copying all capabilities of a private workspace.
+## Milestone 4: native observation
+
+- [ ] Module/export/address resolution with build identity checks (address and permission checks only; build hash not verified)
+- [ ] Typed argument and return capture
+- [x] Backtrace and bounded memory snapshots
+
+## Milestone 5: controlled invocation
+
+- [ ] Method allowlist and typed argument schema
+- [ ] Loopback-only transport through ADB forwarding
+- [ ] Random per-session token
+- [ ] Rate limit, audit log and automatic shutdown
+
+## Milestone 6: Agent integration
+
+- [ ] Stable CLI JSON output
+- [ ] Tool manifests for Agent runtimes
+- [ ] Evidence correlation with scene/request IDs
+- [ ] Evaluation corpus made only from synthetic and authorized samples
+
+
+## 2026-10-21 scope correction
+
+Development is terminal-first. Local export search, artifact fingerprinting and
+JSONL summaries are implemented. Generic static-provider wrappers will be added
+only after demonstrating a gap in existing CLI tools. See `status.md`; unchecked
+items above are plans, not working capabilities.

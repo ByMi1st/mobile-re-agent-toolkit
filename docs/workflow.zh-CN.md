@@ -25,6 +25,7 @@ IDA/Hex-Rays 批量导出伪码、汇编、函数元数据与索引。Agent 本�
 
 按真实场景定义实验，外部 Frida Runner 负责 spawn/attach、加载、resume、message、持续采集与 cleanup。MITM 保存实际请求，进程内 Hook 补充明文与加密边界。页面、线程、调用序号、缓冲区与请求通过同轮字节和哈希交叉对应。
 
+v0.2.0 新写了通用 Frida Runner 与 Native 探针，未复制目标专用捕获器；HTTPS、代理和设备特定 Trace 仍留在原工作区，不属于本仓库。Runner 的本机或 CI 验证不能代替 Android 真机验证。
 
 ## Trace 与离线恢复
 

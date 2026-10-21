@@ -8,17 +8,19 @@ English | [简体中文](README.zh-CN.md)
 A small, terminal-first toolkit for authorized Android reverse-engineering work.
 It is not an agent framework, decompiler, or large MCP tool catalog.
 
-## v0.1.0: four commands
+## v0.2.0: six commands
 
-| Command | What it does | What it does not prove |
-|---|---|---|
-| `fingerprint` | Stream a file into SHA-256 and report its size | Authenticity or publisher identity |
-| `search-exports` | Search local text exports with file/line references and output limits | Semantic cross-references or runtime calls |
-| `summarize-events` | Validate the basic JSONL event envelope and count event types | Truthfulness or completeness of a capture |
-| `generate-java-hook` | Generate a Frida Java probe for one exact method overload | Device compatibility or an active capture |
+| Command | Purpose |
+|---|---|
+| `fingerprint` | Stream local file SHA-256 and size |
+| `search-exports` | Bounded literal search with file/line evidence, not semantic xref |
+| `summarize-events` | Basic JSONL envelope checks and event counts |
+| `generate-java-hook` | Exact Java overload probe source generation |
+| `generate-native-hook` | Module/symbol or offset probe, raw entry/return and bounded binary snapshots |
+| `run` | Explicit local/device/remote Frida spawn or attach, messages and cleanup |
 
-All commands run locally. Probe generation does not attach to a phone. The
-project bundles no private application samples, production traces or credentials.
+Offline commands need only Python. Runtime bindings are optional. No private
+samples, production captures or credentials are bundled.
 
 ## Install and try
 
@@ -37,7 +39,9 @@ mrat generate-java-hook \
   --overload java.lang.String --out /tmp/example-hook.js
 ```
 
-No PyPI release is claimed. See [setup](docs/setup.md) for source-only usage,
+For runtime capture, install `python -m pip install ".[runtime]"`.
+See [runtime guide](docs/runtime.md) for actual effects, limits and the
+source-built end-to-end verification example. No PyPI release is claimed. See [setup](docs/setup.md) for source-only usage,
 exit codes and prerequisites for manually running a generated script.
 
 ## Generated events
@@ -60,8 +64,9 @@ tools. This repository does not migrate or wrap all of them. It does not ship
 certificate bypasses, kernel probes, flashing packages, company tools, RPC
 servers or target-specific algorithms.
 
-Next iterations are a generic Frida session runner, then a native probe
-generator. Neither is included in v0.1.0. See [status](docs/status.md),
+The generic runner and native probe generator are implemented in v0.2.0.
+Platform compatibility is established only by the real verification results in
+[verification](docs/verification.md); Android remains unverified. See [status](docs/status.md),
 [architecture](docs/architecture.md), [roadmap](docs/roadmap.md) and the
 [practical workflow (中文)](docs/workflow.zh-CN.md).
 

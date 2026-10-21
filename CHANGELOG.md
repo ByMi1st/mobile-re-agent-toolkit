@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 — 2026-10-21
+
+- Added explicit-transport Frida runner with bounded messages/binary data.
+- Added ownership-aware cleanup, deadlines and readiness checks.
+- Added native export/offset probes and source-built real-provider fixture.
+- Expanded failure, lifecycle and JavaScript behavior tests.
+
+
 ## 0.1.0 — 2026-10-21 (local, not published)
 
 - Introduced exact-overload Java Hook generation.

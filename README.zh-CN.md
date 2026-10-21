@@ -7,16 +7,18 @@
 
 一个面向授权 Android 逆向分析的轻量终端工具包。它不是 Agent 框架、反编译器，也不是需要常驻加载的大型 MCP 工具集合。
 
-## v0.1.0：四个命令
+## v0.2.0：六个命令
 
-| 命令 | 功能 | 不能据此证明什么 |
-|---|---|---|
-| `fingerprint` | 流式计算文件 SHA-256，记录文件大小 | 文件真实性或发布者身份 |
-| `search-exports` | 检索本地文本导出，返回文件、行号和输出限制信息 | 语义交叉引用或真实运行时调用 |
-| `summarize-events` | 校验 JSONL 基本事件格式，统计事件类型 | 采集内容真实或覆盖完整 |
-| `generate-java-hook` | 为一个明确的 Java 方法重载生成 Frida 探针 | 真机兼容性或正在进行的采集 |
+| 命令 | 功能 |
+|---|---|
+| `fingerprint` | 流式计算文件 SHA-256 和大小 |
+| `search-exports` | 有限长度文本检索，附文件和行号；不是语义引用 |
+| `summarize-events` | JSONL 基本事件校验与计数 |
+| `generate-java-hook` | 生成精确 Java 重载的探针源码 |
+| `generate-native-hook` | 生成模块/符号或偏移探针，记录原始参数、返回值和有限二进制快照 |
+| `run` | 明确指定传输与目标的 Frida spawn/attach、消息采集及清理 |
 
-所有命令都在本地执行。生成探针不会连接手机；仓库不包含私有应用样本、生产流量或凭据。
+离线命令只需要 Python，运行时依赖可选安装。仓库不包含私有样本、生产流量或凭据。
 
 ## 安装与试用
 
@@ -35,7 +37,8 @@ mrat generate-java-hook \
   --overload java.lang.String --out /tmp/example-hook.js
 ```
 
-尚未发布到 PyPI。[安装说明](docs/setup.md)包含获取仓库、免安装运行、退出码和手动执行探针的依赖条件。
+运行时采集另安装 `python -m pip install ".[runtime]"`。
+[动态使用说明](docs/runtime.zh-CN.md)包含执行方式、副作用、限制与端到端合成样例。尚未发布到 PyPI。[安装说明](docs/setup.md)包含获取仓库、免安装运行、退出码和手动执行探针的依赖条件。
 
 ## 探针记录什么
 
@@ -49,7 +52,7 @@ Java 调用事件包含 PID/TID、调用编号、方法与重载、参数、返�
 
 JADX、IDA、Unicorn 和语义引用工具仍作为外部分析工具使用，本仓库不整体迁入或重新封装它们。不包含证书绕过、内核探针、刷机包、公司工具、RPC 服务或目标专用算法。
 
-后续先做通用 Frida 会话 Runner，再做 Native 探针生成器；两者都不属于 v0.1.0 已实现功能。
+v0.2.0 已实现通用 Runner 和 Native 探针生成；实际兼容范围以[真实验证记录](docs/verification.md)为准，Android 真机仍未验证。
 
 相关文档：[实现状态](docs/status.md) · [架构与验证约束](docs/architecture.md) · [后续计划](docs/roadmap.md) · [实际工作流](docs/workflow.zh-CN.md)。部分文档目前仅提供英文。
 

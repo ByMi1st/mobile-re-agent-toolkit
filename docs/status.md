@@ -1,25 +1,15 @@
-# v0.1.0 status
+# Implementation status
 
-The release scope is exactly four commands: fingerprint, search-exports,
-summarize-events and generate-java-hook. They have local unit tests and synthetic
-fixtures. Installation and CLI examples are checked in an isolated environment.
+v0.2.0 ships six commands: four offline/source-generation utilities plus
+`generate-native-hook` and `run`. It includes binary Frida message persistence,
+explicit target/transport selection, finite capture/cleanup, native module load
+observation and bounded snapshots. See runtime.md for effects and limitations.
 
-A basic JSONL check is not a comprehensive runtime-event schema validator.
-Text search is not semantic xref. A generated probe is not a running session.
-Synthetic JavaScript tests are not real Android compatibility tests.
+Host tests cover normal and failed setup, ownership-aware cleanup, binary
+truncation, event/message limits, cancellation, required readiness, and synthetic
+JS native/Java behavior. They do not establish real Frida compatibility.
+Real-provider results and failures are recorded separately in verification.md.
 
-## Future, not shipped
-
-- Generic Frida runner: explicit device/process selection, attach/spawn,
-  message/binary transport, timeouts and cleanup.
-- Native probe generator: selected module/function and bounded raw observations.
-
-## Outside this repository
-
-IDA/Unicorn integration, private xref JAR redistribution, packer recovery,
-application-specific algorithms, interception bypasses, kernel/flash packages,
-company tools and production data are excluded. External research projects are
-not dependencies or verified integrations.
-
-See release-checklist.md for publication verification. The existence of a CI
-configuration or badge alone does not establish a passing remote run.
+IDA/Unicorn migration, private JAR redistribution, system tracing, interception
+bypasses, RPC, automatic bridge installation, whole-process tracing and target
+algorithms remain outside scope. Java runtime discovery is not implemented.
