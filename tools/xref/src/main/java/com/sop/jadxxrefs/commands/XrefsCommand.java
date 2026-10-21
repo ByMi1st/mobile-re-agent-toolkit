@@ -10,17 +10,17 @@ public class XrefsCommand {
         java.lang.String jadxDir = cmd.getOptionValue("jadx-dir");
         java.lang.String className = cmd.getOptionValue("class");
         java.lang.String methodName = cmd.getOptionValue("method");
-        com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+        com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
         try {
             jadx.api.JavaClass javaClass = loader.findClassByName(className);
             if (javaClass == null) {
                 com.sop.jadxxrefs.utils.JsonOutput.printError("Class not found: " + className);
-                java.lang.System.exit(1);
+                throw new com.sop.jadxxrefs.CommandException();
             }
             java.util.List<jadx.api.JavaMethod> matchedMethods = findMethodsByName(javaClass, methodName);
             if (matchedMethods.isEmpty()) {
                 com.sop.jadxxrefs.utils.JsonOutput.printError("Method not found: " + methodName + " in " + className);
-                java.lang.System.exit(1);
+                throw new com.sop.jadxxrefs.CommandException();
             }
             java.util.List<jadx.api.JavaMethod> relatedMethods = new java.util.ArrayList<>();
             for (jadx.api.JavaMethod baseMethod : matchedMethods) {
@@ -54,12 +54,12 @@ public class XrefsCommand {
         org.apache.commons.cli.CommandLine cmd = parseArgs(options, args);
         java.lang.String jadxDir = cmd.getOptionValue("jadx-dir");
         java.lang.String className = cmd.getOptionValue("class");
-        com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+        com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
         try {
             jadx.api.JavaClass targetClass = loader.findClassByName(className);
             if (targetClass == null) {
                 com.sop.jadxxrefs.utils.JsonOutput.printError("Class not found: " + className);
-                java.lang.System.exit(1);
+                throw new com.sop.jadxxrefs.CommandException();
             }
             jadx.core.dex.nodes.ClassNode targetClassNode = targetClass.getClassNode();
             java.util.List<jadx.core.dex.nodes.ClassNode> classReferences = targetClassNode.getUseIn();
@@ -128,17 +128,17 @@ public class XrefsCommand {
         java.lang.String jadxDir = cmd.getOptionValue("jadx-dir");
         java.lang.String className = cmd.getOptionValue("class");
         java.lang.String fieldName = cmd.getOptionValue("field");
-        com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+        com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
         try {
             jadx.api.JavaClass javaClass = loader.findClassByName(className);
             if (javaClass == null) {
                 com.sop.jadxxrefs.utils.JsonOutput.printError("Class not found: " + className);
-                java.lang.System.exit(1);
+                throw new com.sop.jadxxrefs.CommandException();
             }
             jadx.api.JavaField targetField = findFieldByName(javaClass, fieldName);
             if (targetField == null) {
                 com.sop.jadxxrefs.utils.JsonOutput.printError("Field not found: " + fieldName + " in " + className);
-                java.lang.System.exit(1);
+                throw new com.sop.jadxxrefs.CommandException();
             }
             jadx.core.dex.nodes.FieldNode fieldNode = targetField.getFieldNode();
             java.util.List<jadx.core.dex.nodes.MethodNode> fieldReferences = fieldNode.getUseIn();
@@ -162,8 +162,7 @@ public class XrefsCommand {
         } catch (org.apache.commons.cli.ParseException e) {
             java.lang.System.err.println("Error: " + e.getMessage());
             new org.apache.commons.cli.HelpFormatter().printHelp("xrefs-command", options);
-            java.lang.System.exit(1);
-            return null;
+            throw new com.sop.jadxxrefs.CommandException();
         }
     }
 
@@ -252,7 +251,7 @@ public class XrefsCommand {
         java.lang.String className = cmd.getOptionValue("class");
         java.lang.String methodName = cmd.getOptionValue("method");
         java.lang.String hostPackage = cmd.getOptionValue("host-package", "");
-        com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+        com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
         try {
             java.util.List<java.util.Map<java.lang.String, java.lang.String>> referenceList = new java.util.ArrayList<>();
             jadx.api.JavaClass targetClass = loader.findClassByName(className);

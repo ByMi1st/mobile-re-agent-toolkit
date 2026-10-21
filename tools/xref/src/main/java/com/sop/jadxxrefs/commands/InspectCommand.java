@@ -14,12 +14,13 @@ public class InspectCommand {
             java.lang.String className = cmd.getOptionValue("class");
             boolean showMethods = cmd.hasOption("show-methods") || !cmd.hasOption("show-fields");
             boolean showFields = cmd.hasOption("show-fields") || !cmd.hasOption("show-methods");
-            com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+            com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
+            loader.preloadAll();
             try {
                 jadx.api.JavaClass javaClass = loader.findClassByName(className);
                 if (javaClass == null) {
                     com.sop.jadxxrefs.utils.JsonOutput.printError("Class not found: " + className);
-                    java.lang.System.exit(1);
+                    throw new com.sop.jadxxrefs.CommandException();
                 }
                 java.util.Map<java.lang.String, java.lang.Object> result = new java.util.HashMap<>();
                 result.put("class", className);
@@ -61,7 +62,7 @@ public class InspectCommand {
         } catch (org.apache.commons.cli.ParseException e) {
             java.lang.System.err.println("Error: " + e.getMessage());
             new org.apache.commons.cli.HelpFormatter().printHelp("inspect-class", options);
-            java.lang.System.exit(1);
+            throw new com.sop.jadxxrefs.CommandException();
         }
     }
 }

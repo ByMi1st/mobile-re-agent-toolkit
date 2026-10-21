@@ -3,8 +3,23 @@ package com.sop.jadxxrefs;
 public class JadxLoader implements java.lang.AutoCloseable {
     private final jadx.api.JadxDecompiler decompiler;
     private final java.util.List<jadx.api.JavaClass> classes;
+    private final java.lang.String jadxDir;
+    private static JadxLoader shared;
+    private boolean keepOpen;
 
-    public JadxLoader(java.lang.String jadxDir) throws java.lang.Exception {
+    public static synchronized JadxLoader shared(java.lang.String jadxDir) throws java.lang.Exception {
+        if (shared == null || !shared.jadxDir.equals(jadxDir)) {
+            if (shared != null) {
+                shared.release();
+            }
+            shared = new JadxLoader(jadxDir);
+            shared.keepOpen = true;
+        }
+        return shared;
+    }
+
+    private JadxLoader(java.lang.String jadxDir) throws java.lang.Exception {
+        this.jadxDir = jadxDir;
         java.io.File inputFile = findInputFile(jadxDir);
         jadx.api.JadxArgs args = new jadx.api.JadxArgs();
         args.setInputFile(inputFile);
@@ -18,12 +33,7 @@ public class JadxLoader implements java.lang.AutoCloseable {
         this.decompiler.load();
         java.lang.System.err.println("DEBUG: Building cross-reference index...");
         if (System.getenv("XREF_FULL_INDEX") != null) {
-            for (jadx.api.JavaClass cls : this.decompiler.getClasses()) {
-                try {
-                    cls.getCode();
-                } catch (java.lang.Exception e) {
-                }
-            }
+            preloadAll();
         }
         this.classes = this.decompiler.getClassesWithInners();
         java.lang.System.err.println("DEBUG: Loaded " + this.classes.size() + " classes from " + inputFile.getName());
@@ -67,8 +77,27 @@ public class JadxLoader implements java.lang.AutoCloseable {
         return null;
     }
 
+    public void preloadAll() {
+        for (jadx.api.JavaClass cls : this.decompiler.getClasses()) {
+            processClass(cls);
+        }
+    }
+
+    private void processClass(jadx.api.JavaClass cls) {
+        try {
+            cls.getCode();
+        } catch (java.lang.Exception e) {
+        }
+    }
+
     @Override // java.lang.AutoCloseable
     public void close() {
+        if (!this.keepOpen) {
+            release();
+        }
+    }
+
+    private void release() {
         if (this.decompiler != null) {
             this.decompiler.close();
         }

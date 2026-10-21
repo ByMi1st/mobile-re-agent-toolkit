@@ -65,4 +65,3 @@ bundles 1.5.3. The pin is now 1.5.3. After that, all four subcommands matched th
 original jar byte for byte in both lazy and full modes, except `inspect-class`, which
 now always uses the full index because lazy loading changed its method list. The
 test suite covers the server with a stub process.
-

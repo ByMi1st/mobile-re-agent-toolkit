@@ -1,50 +1,64 @@
 package com.sop.jadxxrefs;
 
+import java.util.Arrays;
+
 public class Main {
-    public static void main(java.lang.String[] args) {
+    public static void main(String[] args) {
         if (args.length == 0) {
             printUsage();
-            java.lang.System.exit(1);
+            System.exit(1);
         }
-        java.lang.String command = args[0];
-        java.lang.String[] cmdArgs = new java.lang.String[args.length - 1];
-        java.lang.System.arraycopy(args, 1, cmdArgs, 0, args.length - 1);
-        try {
-            switch (command) {
-                case "xrefs-to-method":
-                    com.sop.jadxxrefs.commands.XrefsCommand.xrefsToMethod(cmdArgs);
-                    break;
-                case "xrefs-to-class":
-                    com.sop.jadxxrefs.commands.XrefsCommand.xrefsToClass(cmdArgs);
-                    break;
-                case "xrefs-to-field":
-                    com.sop.jadxxrefs.commands.XrefsCommand.xrefsToField(cmdArgs);
-                    break;
-                case "xrefs-to-system-api":
-                    com.sop.jadxxrefs.commands.XrefsCommand.xrefsToSystemApi(cmdArgs);
-                    break;
-                case "search-classes":
-                    com.sop.jadxxrefs.commands.SearchCommand.searchClasses(cmdArgs);
-                    break;
-                case "get-smali":
-                    com.sop.jadxxrefs.commands.SmaliCommand.getSmali(cmdArgs);
-                    break;
-                case "inspect-class":
-                    com.sop.jadxxrefs.commands.InspectCommand.inspectClass(cmdArgs);
-                    break;
-                case "debug-list-classes":
-                    com.sop.jadxxrefs.commands.DebugCommand.listClasses(cmdArgs);
-                    break;
-                default:
-                    java.lang.System.err.println("Unknown command: " + command);
-                    printUsage();
-                    java.lang.System.exit(1);
-                    break;
+        if (args[0].equals("serve")) {
+            try {
+                System.exit(Server.run(Arrays.copyOfRange(args, 1, args.length)));
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+                System.exit(1);
             }
-        } catch (java.lang.Exception e) {
-            java.lang.System.err.println("Error: " + e.getMessage());
+        }
+        try {
+            dispatch(args);
+        } catch (CommandException e) {
+            System.exit(1);
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
-            java.lang.System.exit(1);
+            System.exit(1);
+        }
+    }
+
+    static void dispatch(String[] args) throws Exception {
+        String command = args[0];
+        String[] cmdArgs = Arrays.copyOfRange(args, 1, args.length);
+        switch (command) {
+            case "xrefs-to-method":
+                com.sop.jadxxrefs.commands.XrefsCommand.xrefsToMethod(cmdArgs);
+                break;
+            case "xrefs-to-class":
+                com.sop.jadxxrefs.commands.XrefsCommand.xrefsToClass(cmdArgs);
+                break;
+            case "xrefs-to-field":
+                com.sop.jadxxrefs.commands.XrefsCommand.xrefsToField(cmdArgs);
+                break;
+            case "xrefs-to-system-api":
+                com.sop.jadxxrefs.commands.XrefsCommand.xrefsToSystemApi(cmdArgs);
+                break;
+            case "search-classes":
+                com.sop.jadxxrefs.commands.SearchCommand.searchClasses(cmdArgs);
+                break;
+            case "get-smali":
+                com.sop.jadxxrefs.commands.SmaliCommand.getSmali(cmdArgs);
+                break;
+            case "inspect-class":
+                com.sop.jadxxrefs.commands.InspectCommand.inspectClass(cmdArgs);
+                break;
+            case "debug-list-classes":
+                com.sop.jadxxrefs.commands.DebugCommand.listClasses(cmdArgs);
+                break;
+            default:
+                System.err.println("Unknown command: " + command);
+                printUsage();
+                throw new CommandException();
         }
     }
 

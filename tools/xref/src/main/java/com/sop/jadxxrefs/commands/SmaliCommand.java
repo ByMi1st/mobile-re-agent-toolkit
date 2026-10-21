@@ -10,12 +10,12 @@ public class SmaliCommand {
             org.apache.commons.cli.CommandLine cmd = parser.parse(options, args);
             java.lang.String jadxDir = cmd.getOptionValue("jadx-dir");
             java.lang.String className = cmd.getOptionValue("class");
-            com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+            com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
             try {
                 jadx.api.JavaClass javaClass = loader.findClassByName(className);
                 if (javaClass == null) {
                     com.sop.jadxxrefs.utils.JsonOutput.printError("Class not found: " + className);
-                    java.lang.System.exit(1);
+                    throw new com.sop.jadxxrefs.CommandException();
                 }
                 java.lang.String code = javaClass.getCode();
                 java.util.Map<java.lang.String, java.lang.String> result = new java.util.HashMap<>();
@@ -35,7 +35,7 @@ public class SmaliCommand {
         } catch (org.apache.commons.cli.ParseException e) {
             java.lang.System.err.println("Error: " + e.getMessage());
             new org.apache.commons.cli.HelpFormatter().printHelp("get-smali", options);
-            java.lang.System.exit(1);
+            throw new com.sop.jadxxrefs.CommandException();
         }
     }
 }

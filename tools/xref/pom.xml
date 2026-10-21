@@ -12,7 +12,7 @@
   <properties>
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jadx.version>1.5.1</jadx.version>
+    <jadx.version>1.5.3</jadx.version>
   </properties>
 
   <repositories>

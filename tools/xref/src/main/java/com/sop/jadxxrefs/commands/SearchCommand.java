@@ -22,7 +22,7 @@ public class SearchCommand {
             java.lang.String keyword = cmd.getOptionValue("keyword");
             java.lang.String locationStr = cmd.getOptionValue("location", "code");
             com.sop.jadxxrefs.commands.SearchCommand.SearchLocation location = parseSearchLocation(locationStr);
-            com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+            com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
             try {
                 java.util.ArrayList arrayList = new java.util.ArrayList();
                 for (jadx.api.JavaClass cls : loader.getClasses()) {
@@ -51,7 +51,7 @@ public class SearchCommand {
         } catch (org.apache.commons.cli.ParseException e) {
             java.lang.System.err.println("Error: " + e.getMessage());
             new org.apache.commons.cli.HelpFormatter().printHelp("search-classes", options);
-            java.lang.System.exit(1);
+            throw new com.sop.jadxxrefs.CommandException();
         }
     }
 

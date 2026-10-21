@@ -10,7 +10,7 @@ public class DebugCommand {
             org.apache.commons.cli.CommandLine cmd = parser.parse(options, args);
             java.lang.String jadxDir = cmd.getOptionValue("jadx-dir");
             int limit = java.lang.Integer.parseInt(cmd.getOptionValue("limit", "20"));
-            com.sop.jadxxrefs.JadxLoader loader = new com.sop.jadxxrefs.JadxLoader(jadxDir);
+            com.sop.jadxxrefs.JadxLoader loader = com.sop.jadxxrefs.JadxLoader.shared(jadxDir);
             try {
                 int totalClasses = loader.getClasses().size();
                 java.lang.System.err.println("Total classes loaded: " + totalClasses);
@@ -32,7 +32,7 @@ public class DebugCommand {
         } catch (org.apache.commons.cli.ParseException e) {
             java.lang.System.err.println("Error: " + e.getMessage());
             new org.apache.commons.cli.HelpFormatter().printHelp("debug-list-classes", options);
-            java.lang.System.exit(1);
+            throw new com.sop.jadxxrefs.CommandException();
         }
     }
 }
