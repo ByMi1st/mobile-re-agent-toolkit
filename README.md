@@ -5,38 +5,84 @@
 
 English | [简体中文](README.zh-CN.md)
 
-A small, terminal-first toolkit for authorized Android reverse-engineering work.
-It is not an agent framework, decompiler, or large MCP tool catalog.
+Mobile RE Agent Toolkit (`mrat`) is a reverse-engineering toolchain for agents.
+It gives an agent a small set of terminal commands with predictable output: every
+result is JSON, every input file is hashed, and every answer says what it can and
+cannot prove.
+
+It does not replace jadx, IDA or Frida. It wraps them, so the agent calls them the
+same way each time and the evidence stays on disk.
+
+## How an agent uses it
+
+Suppose you ask an agent: *"Find where this app builds the signature header, and
+show me who calls that method."* A typical run looks like this:
+
+1. `fingerprint` records the sample's SHA-256, so every later result is tied to it.
+2. `locate-dex` finds the DEX file that defines the class.
+3. `scope-apk` writes a smaller APK containing only that DEX, so jadx does not run out of memory.
+4. `decompile-class` produces the readable source of the class.
+5. `xref-method` lists the static callers, using the xref jar you provide.
+6. A `generate-*-hook` command prepares a probe, and `run` observes the target on a device you name explicitly.
+
+Each step writes its output to a file, and each result lists its own limits. The
+agent can pick up where it stopped, and you can check every claim against the file.
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `fingerprint` | Stream local file SHA-256 and size |
-| `search-exports` | Bounded literal search with file/line evidence, not semantic xref |
-| `summarize-events` | Basic JSONL envelope checks and event counts |
-| `locate-dex` | Find root DEX entries that define or mention a class or string | Call graphs or runtime use |
-| `scope-apk` | Write an analysis-only APK with selected root DEX files | An installable or complete APK |
-| `decompile-class` | Decompile one class with a user-supplied jadx CLI, with timeout and safe flags | Original source; correctness of decompiled code |
-| `xref-method` | List static references to one method using a user-supplied xref jar | Runtime calls; reflection and dynamic dispatch |
-| `ida-run` | Run an IDA headless batch script on a database and record log and database hashes | IDA itself; the script's results |
-| `diff-binary` | Compare two binaries by hash and, for ELF, section hashes and sizes | Behavioral differences; cause of a change |
-| `generate-java-hook` | Exact Java overload probe source generation |
-| `generate-native-hook` | Module/symbol or offset probe, raw entry/return and bounded binary snapshots |
-| `run` | Explicit local/device/remote Frida spawn or attach, messages and cleanup |
+### Samples and baselines
 
-Offline commands need only Python. Runtime bindings are optional. No private
-samples, production captures or credentials are bundled.
+| Command | What it does | What it does not prove |
+|---|---|---|
+| `fingerprint` | Hashes a file (SHA-256) and records its size. Run it first. | Where the sample came from |
+| `diff-binary` | Compares two binaries by hash, and by section for ELF files. Useful after a version bump, before you rerun anything. | What a change does |
 
-## Install and try
+### Java / DEX
 
-Requires Python 3.10+. From a repository checkout:
+| Command | What it does | What it does not prove |
+|---|---|---|
+| `locate-dex` | Finds which root `classes*.dex` defines or mentions a class or a string. | That the code is called at runtime |
+| `scope-apk` | Writes an analysis-only APK with the DEX files you choose. Fully indexing a large APK can exhaust memory, so narrow first. | Anything about DEX files you left out |
+| `decompile-class` | Decompiles one class with the jadx CLI you point it at. Uses `--show-bad-code`, so check incorrect output before relying on it. | That the decompiled code is correct |
+| `xref-method` | Lists static references to one method, using an xref jar you supply with `--jar`. | Reflection, dynamic dispatch or runtime calls |
+| `search-exports` | Searches text exports from jadx or IDA and returns file and line. | Semantic references |
+
+### Native
+
+| Command | What it does | What it does not prove |
+|---|---|---|
+| `ida-run` | Runs an IDA headless batch script on a database, and records the log and the database hashes before and after. | The script's results, or anything IDA itself did |
+
+### Dynamic (Frida)
+
+| Command | What it does | What it does not prove |
+|---|---|---|
+| `generate-java-hook` | Generates a probe for one exact Java overload. | That the probe ran on a device |
+| `generate-native-hook` | Generates a probe for an exported symbol or an offset. It records raw arguments, the return value and bounded buffer snapshots. | Argument types, or that the build matches |
+| `run` | Runs a script against a target you name (a device, a remote endpoint or the local machine; attach by PID or spawn). It collects messages and cleans up. | What happened outside the capture window |
+
+### Evidence
+
+| Command | What it does | What it does not prove |
+|---|---|---|
+| `summarize-events` | Checks that a JSONL event file has the basic envelope and counts the events. | That the capture is complete or truthful |
+
+Offline commands need only Python. Runtime bindings are optional.
+
+## Install
+
+Requires Python 3.10 or later. From a checkout:
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
 mrat --help
+```
+
+Try it on the bundled synthetic examples:
+
+```bash
 mrat fingerprint examples/exports/0x1000.c
 mrat search-exports examples/exports memcpy --limit 10
 mrat summarize-events examples/events.jsonl
@@ -45,36 +91,38 @@ mrat generate-java-hook \
   --overload java.lang.String --out /tmp/example-hook.js
 ```
 
-For runtime capture, install `python -m pip install ".[runtime]"`.
-See [runtime guide](docs/runtime.md) for actual effects, limits and the
-source-built end-to-end verification example. No PyPI release is claimed. See [setup](docs/setup.md) for source-only usage,
-exit codes and prerequisites for manually running a generated script.
+For runtime capture, also install `python -m pip install ".[runtime]"`. The
+[runtime guide](docs/runtime.md) lists the actual effects of each command, and
+[setup](docs/setup.md) covers exit codes and the prerequisites for running a
+generated script by hand.
 
-## Generated events
+## Bring your own tools
 
-Java invocation events include PID/TID, an invocation ID, method and overload,
-arguments, return value, exception, stack and optional scene/request labels.
-Labels are caller-supplied, not automatic causal attribution. Values use bounded
-text previews, not lossless Java object or binary serialization. The duration
-uses wall-clock milliseconds and is not a precision benchmark.
+This repository does not ship jadx, IDA, Frida, an xref jar, or any application
+samples. You install or obtain them yourself, and you are responsible for their
+licenses and versions. Pass their paths explicitly, for example `--jadx`, `--jar`,
+`--idat` or `--java`. If you leave a flag out, the command looks for the tool on
+your `PATH` and fails clearly when it is not there.
 
-Logging failures do not replace the original method's return value or exception.
-Instrumentation can still affect timing and behavior; an observation label is
-not evidence that the process was untouched. Scripts require an available Frida
-Java bridge. Real Android compatibility has not yet been verified.
+## What it can and cannot establish
 
-## Scope
+- Static results are candidates until something else confirms them. The
+  [workflow guide](docs/workflow.zh-CN.md) describes the evidence grades
+  (`confirmed_static`, `candidate`, `contradicted`) and how to use them.
+- Generated Java probes report invocations with their arguments and return values
+  as text previews. Logging failures do not change the original method's result, but
+  instrumentation can still change timing and behavior.
+- Android devices have not been tested. The native probe has been checked only against a
+  source-built synthetic fixture, and the real jadx and IDA paths have not been run
+  in CI. [Verification](docs/verification.md) records what has actually run.
 
-JADX, IDA, Unicorn and semantic-reference utilities remain external analyst
-tools. This repository does not migrate or wrap all of them. It does not ship
-certificate bypasses, kernel probes, flashing packages, company tools, RPC
-servers or target-specific algorithms.
+## Documentation
 
-The generic runner and native probe generator are implemented in v0.2.0.
-Platform compatibility is established only by the real verification results in
-[verification](docs/verification.md); Android remains unverified. See [status](docs/status.md),
-[architecture](docs/architecture.md), [roadmap](docs/roadmap.md) and the
-[practical workflow (中文)](docs/workflow.zh-CN.md).
+- [Workflow (中文)](docs/workflow.zh-CN.md): the static analysis path, step by step, with pitfalls.
+- [Runtime](docs/runtime.md): capture, native probes, cleanup and limits.
+- [Setup](docs/setup.md): installation, exit codes and manual script execution.
+- [Status](docs/status.md): what is implemented, tested with stubs or synthetic data, or not built yet.
+- [Architecture](docs/architecture.md) and [roadmap](docs/roadmap.md).
 
 ## Development
 
@@ -82,8 +130,15 @@ Platform compatibility is established only by the real verification results in
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-Node.js is optional for running the synthetic JavaScript test. If absent, that
-test explicitly skips; Python tests do not establish phone compatibility.
+Node.js is optional. Without it, the synthetic JavaScript test is skipped. Passing
+Python tests does not establish device compatibility. Contributions should stay
+target-agnostic; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Scope and responsibility
+
+Use this toolkit only on software you own or are authorized to assess. The project
+does not include certificate bypasses, kernel probes, flashing packages, company
+tooling, RPC servers or target-specific algorithms, and it will not add them.
 
 ## License
 
