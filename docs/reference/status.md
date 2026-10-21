@@ -19,9 +19,10 @@ and `run`.
 
 ## Verified only with stubs or synthetic data
 
-- jadx: the wrapper is tested with stubs. A real-jadx check runs only when
-  MRAT_TEST_APK and MRAT_TEST_CLASS are set. The synthetic DEX in the test suite is
-  rejected by jadx, so a real sample is needed for that check.
+- jadx and xref: the full static chain ran once on a real CTF training APK
+  (see [verification](verification.md)). The test suite still uses stubs; the real
+  check runs only when MRAT_TEST_APK and MRAT_TEST_CLASS are set, because the
+  synthetic DEX in the tests is rejected by jadx.
 - IDA: not available in this environment; `ida-run` has no real-IDA test.
 - Frida: real-provider lanes are recorded in [verification](verification.md); Android devices are not tested.
 
