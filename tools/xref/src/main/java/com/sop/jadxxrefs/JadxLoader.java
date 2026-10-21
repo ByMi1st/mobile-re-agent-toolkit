@@ -12,15 +12,17 @@ public class JadxLoader implements java.lang.AutoCloseable {
         args.setSkipSources(false);
         args.setDeobfuscationOn(false);
         args.setShowInconsistentCode(true);
-        args.setThreadsCount(1);
+        args.setThreadsCount(Runtime.getRuntime().availableProcessors());
         this.decompiler = new jadx.api.JadxDecompiler(args);
         java.lang.System.err.println("DEBUG: Loading APK: " + inputFile.getAbsolutePath());
         this.decompiler.load();
         java.lang.System.err.println("DEBUG: Building cross-reference index...");
-        for (jadx.api.JavaClass cls : this.decompiler.getClasses()) {
-            try {
-                cls.getCode();
-            } catch (java.lang.Exception e) {
+        if (System.getenv("XREF_FULL_INDEX") != null) {
+            for (jadx.api.JavaClass cls : this.decompiler.getClasses()) {
+                try {
+                    cls.getCode();
+                } catch (java.lang.Exception e) {
+                }
             }
         }
         this.classes = this.decompiler.getClassesWithInners();

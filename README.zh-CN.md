@@ -96,7 +96,7 @@ mvn -f tools/xref/pom.xml package
 export MRAT_XREF_JAR="$PWD/tools/xref/target/jadx-xrefs-cli.jar"
 ```
 
-构建固定使用 jadx 1.5.1，调用的子命令与包装里的一致。你需要自己安装或获取它们，并负责它们的许可证和版本。通过 `--jadx`、`--jar`、`--idat`、`--java` 等参数显式指定路径；如果不传，命令会去 `PATH` 里找，找不到就明确报错。xref jar 的路径也可以用环境变量 `MRAT_XREF_JAR` 设置。
+构建固定使用 jadx 1.5.1，调用的子命令与包装里的一致。默认按需加载 APK，速度快；设置 `XREF_FULL_INDEX=1` 会先反编译所有类，较慢但索引最完整。你需要自己安装或获取它们，并负责它们的许可证和版本。通过 `--jadx`、`--jar`、`--idat`、`--java` 等参数显式指定路径；如果不传，命令会去 `PATH` 里找，找不到就明确报错。xref jar 的路径也可以用环境变量 `MRAT_XREF_JAR` 设置。
 
 ## 能证明什么，不能证明什么
 

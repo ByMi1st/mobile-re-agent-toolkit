@@ -40,3 +40,16 @@ On the same scoped APK, the rebuilt jar and the original jar produced identical
 stdout and exit codes for `xrefs-to-method`, `xrefs-to-class`, `search-classes` and
 `inspect-class`. The `-d` argument accepts an APK file, as the recovered source
 shows (`JadxLoader.findInputFile`).
+
+## Xref tool performance
+
+2026-10-21, 10-core macOS. Times are wall-clock for one `xrefs-to-class` query.
+
+| APK | Original jar (full preload) | Lazy (default) | Full (`XREF_FULL_INDEX=1`) |
+|---|---|---|---|
+| drillbeam.apk, 10 MB | 7.6 s | 1.7 s | 8.0 s |
+| xiaoyuankousuan.apk, 88 MB | 56.7 s | 6.7 s | not measured |
+
+Output was byte-identical between the original and lazy modes on three queries.
+The lazy mode is not proven complete in general, so use `XREF_FULL_INDEX=1` when a
+missing caller would matter.

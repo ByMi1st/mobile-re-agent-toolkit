@@ -107,7 +107,9 @@ mvn -f tools/xref/pom.xml package
 export MRAT_XREF_JAR="$PWD/tools/xref/target/jadx-xrefs-cli.jar"
 ```
 
-The build pins jadx 1.5.1 and uses the same subcommands the wrapper calls. You install or obtain them yourself, and you are responsible for their
+The build pins jadx 1.5.1 and uses the same subcommands the wrapper calls. By default the
+xref tool loads an APK lazily, which is much faster. Set `XREF_FULL_INDEX=1` to decompile
+every class first, which is slower but the most complete index. You install or obtain them yourself, and you are responsible for their
 licenses and versions. Pass their paths explicitly, for example `--jadx`, `--jar`,
 `--idat` or `--java`. If you leave a flag out, the command looks for the tool on
 your `PATH` and fails clearly when it is not there. The xref jar path can also be set
