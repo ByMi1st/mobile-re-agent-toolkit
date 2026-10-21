@@ -11,3 +11,6 @@ captures/
 devices.local.json
 secrets.local.json
 
+
+# Maven build output for tools/xref
+target/
