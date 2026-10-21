@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added `locate-dex` to find root DEX entries that define or mention a class or string.
+
 ## 0.2.0 — 2026-10-21
 
 - Added explicit-transport Frida runner with bounded messages/binary data.

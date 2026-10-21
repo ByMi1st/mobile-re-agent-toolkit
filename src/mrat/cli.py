@@ -6,6 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .dex import locate_dex
 from .java_hook import generate_java_hook
 from .model import JavaMethodSpec, ProbeContext
 from .native_hook import NativeProbeSpec, generate_native_hook
@@ -49,6 +50,11 @@ def build_parser() -> argparse.ArgumentParser:
     native.add_argument("--max-calls", type=int, default=1000)
     native.add_argument("--backtrace", action="store_true")
     native.add_argument("--out", type=Path, required=True)
+    locate = subparsers.add_parser("locate-dex", help="find DEX entries that define or mention a class or string")
+    locate.add_argument("apk", type=Path)
+    locate_query = locate.add_mutually_exclusive_group(required=True)
+    locate_query.add_argument("--class", dest="class_name")
+    locate_query.add_argument("--text")
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -70,6 +76,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _run(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "locate-dex":
+        result = locate_dex(args.apk, class_name=args.class_name, text=args.text)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "run":
         spec = RunSpec(script=args.script, out=args.out, duration=args.duration,
             local=args.local, device_id=args.device_id, remote=args.remote,
