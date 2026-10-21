@@ -92,8 +92,8 @@ mrat generate-java-hook \
 ```
 
 For runtime capture, also install `python -m pip install ".[runtime]"`. The
-[runtime guide](docs/runtime.md) lists the actual effects of each command, and
-[setup](docs/setup.md) covers exit codes and the prerequisites for running a
+[runtime guide](docs/guides/runtime.md) lists the actual effects of each command, and
+[setup](docs/guides/setup.md) covers exit codes and the prerequisites for running a
 generated script by hand.
 
 ## Bring your own tools
@@ -107,22 +107,22 @@ your `PATH` and fails clearly when it is not there.
 ## What it can and cannot establish
 
 - Static results are candidates until something else confirms them. The
-  [workflow guide](docs/workflow.zh-CN.md) describes the evidence grades
+  [workflow guide](docs/guides/workflow.zh-CN.md) describes the evidence grades
   (`confirmed_static`, `candidate`, `contradicted`) and how to use them.
 - Generated Java probes report invocations with their arguments and return values
   as text previews. Logging failures do not change the original method's result, but
   instrumentation can still change timing and behavior.
 - Android devices have not been tested. The native probe has been checked only against a
   source-built synthetic fixture, and the real jadx and IDA paths have not been run
-  in CI. [Verification](docs/verification.md) records what has actually run.
+  in CI. [Verification](docs/reference/verification.md) records what has actually run.
 
 ## Documentation
 
-- [Workflow (中文)](docs/workflow.zh-CN.md): the static analysis path, step by step, with pitfalls.
-- [Runtime](docs/runtime.md): capture, native probes, cleanup and limits.
-- [Setup](docs/setup.md): installation, exit codes and manual script execution.
-- [Status](docs/status.md): what is implemented, tested with stubs or synthetic data, or not built yet.
-- [Architecture](docs/architecture.md) and [roadmap](docs/roadmap.md).
+- [Workflow (中文)](docs/guides/workflow.zh-CN.md): the static analysis path, step by step, with pitfalls.
+- [Runtime](docs/guides/runtime.md): capture, native probes, cleanup and limits.
+- [Setup](docs/guides/setup.md): installation, exit codes and manual script execution.
+- [Status](docs/reference/status.md): what is implemented, tested with stubs or synthetic data, or not built yet.
+- [Architecture](docs/reference/architecture.md) and [roadmap](docs/reference/roadmap.md).
 
 ## Development
 

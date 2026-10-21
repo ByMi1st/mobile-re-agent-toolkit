@@ -71,7 +71,7 @@ SIGINT/SIGTERM 请求停止并执行清理；API 初始化期间可能等到当�
 ## 可复现的原生样例
 
 ```bash
-PYTHONPATH=src python examples/native/verify_real.py
+PYTHONPATH=src python scripts/verify_real.py
 ```
 
 该脚本只编译仓库内的合成 C 文件，创建临时目录，不连接手机。用真实 Frida 验证 spawn 与 attach，比较函数参数、返回 42 和包含 NUL/非 UTF-8 的 4 字节缓冲区，并读取 C 程序独立输出对账；确认 owned spawn 已退出，attach 和脚本错误均不终止外部进程。

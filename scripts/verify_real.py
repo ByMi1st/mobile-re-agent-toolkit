@@ -1,6 +1,6 @@
 """Run a source-built native fixture with real Frida. No phone required.
 
-Usage: PYTHONPATH=src python examples/native/verify_real.py
+Usage: PYTHONPATH=src python scripts/verify_real.py
 Requires a compatible Frida binding and clang/cc. Writes only to a fresh temp dir.
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ import sys
 import tempfile
 import time
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
 
 
@@ -48,7 +48,7 @@ def main():
             raise RuntimeError(f'{command}: exit={result.returncode}\n{result.stdout}\n{result.stderr}\nartifacts={work}')
         return json.loads(result.stdout.strip().splitlines()[-1])
 
-    spec=importlib.util.spec_from_file_location('capture_verify',ROOT/'examples/native/verify_capture.py')
+    spec=importlib.util.spec_from_file_location('capture_verify',ROOT/'scripts/verify_capture.py')
     verify_module=importlib.util.module_from_spec(spec);spec.loader.exec_module(verify_module)
     spawn_result=run(work/'spawn.jsonl',work/'spawn-truth.txt')
     spawn_check=verify_module.verify(work/'spawn.jsonl',work/'spawn-truth.txt')

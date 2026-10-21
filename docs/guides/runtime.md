@@ -49,11 +49,11 @@ files. Read the final `coverage` field, not only the exit code.
 ## Real fixture
 
 ```bash
-PYTHONPATH=src python examples/native/verify_real.py
+PYTHONPATH=src python scripts/verify_real.py
 ```
 
 On Linux/macOS with a C compiler and working Frida, this compiles only the
 synthetic C fixture. It checks spawn, attach preservation, script errors,
 entry/return values, NUL/non-UTF8 binary snapshots, independent fixture output
 and owned-spawn cleanup. No phone is accessed. Failures are not replaced by mocks.
-See [verification](verification.md) and [full Chinese guide](runtime.zh-CN.md).
+See [verification](../reference/verification.md) and [full Chinese guide](runtime.zh-CN.md).

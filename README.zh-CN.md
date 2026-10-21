@@ -44,7 +44,7 @@ mrat generate-java-hook \
 ```
 
 运行时采集另安装 `python -m pip install ".[runtime]"`。
-[动态使用说明](docs/runtime.zh-CN.md)包含执行方式、副作用、限制与端到端合成样例。尚未发布到 PyPI。[安装说明](docs/setup.md)包含获取仓库、免安装运行、退出码和手动执行探针的依赖条件。
+[动态使用说明](docs/guides/runtime.zh-CN.md)包含执行方式、副作用、限制与端到端合成样例。尚未发布到 PyPI。[安装说明](docs/guides/setup.md)包含获取仓库、免安装运行、退出码和手动执行探针的依赖条件。
 
 ## 探针记录什么
 
@@ -58,9 +58,9 @@ Java 调用事件包含 PID/TID、调用编号、方法与重载、参数、返�
 
 JADX、IDA、Unicorn 和语义引用工具仍作为外部分析工具使用，本仓库不整体迁入或重新封装它们。不包含证书绕过、内核探针、刷机包、公司工具、RPC 服务或目标专用算法。
 
-v0.2.0 已实现通用 Runner 和 Native 探针生成；实际兼容范围以[真实验证记录](docs/verification.md)为准，Android 真机仍未验证。
+v0.2.0 已实现通用 Runner 和 Native 探针生成；实际兼容范围以[真实验证记录](docs/reference/verification.md)为准，Android 真机仍未验证。
 
-相关文档：[实现状态](docs/status.md) · [架构与验证约束](docs/architecture.md) · [后续计划](docs/roadmap.md) · [实际工作流](docs/workflow.zh-CN.md)。部分文档目前仅提供英文。
+相关文档：[实现状态](docs/reference/status.md) · [架构与验证约束](docs/reference/architecture.md) · [后续计划](docs/reference/roadmap.md) · [实际工作流](docs/guides/workflow.zh-CN.md)。部分文档目前仅提供英文。
 
 ## 开发与测试
 
