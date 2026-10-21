@@ -53,3 +53,16 @@ shows (`JadxLoader.findInputFile`).
 Output was byte-identical between the original and lazy modes on three queries.
 The lazy mode is not proven complete in general, so use `XREF_FULL_INDEX=1` when a
 missing caller would matter.
+
+## Xref server mode
+
+2026-10-21. `mrat xref-serve` loads the APK once and answers JSON requests line by
+line. On drillbeam.apk, three `xrefs-to-class` queries took 1.74 s in one process,
+against 5.12 s for three separate runs. Responses matched the one-shot output.
+
+Pinning jadx to 1.5.1 gave different decompiled text from the original jar, which
+bundles 1.5.3. The pin is now 1.5.3. After that, all four subcommands matched the
+original jar byte for byte in both lazy and full modes, except `inspect-class`, which
+now always uses the full index because lazy loading changed its method list. The
+test suite covers the server with a stub process.
+
