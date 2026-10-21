@@ -32,3 +32,11 @@ analysis APK; `decompile-class` (jadx 1.5.3 CLI) produced `Utils.java`;
 `MainActivity$2.onClick`. Decompiling `MainActivity` independently shows the call
 inside `onClick`. The sample's control flow is flattened, so decompiled code needs
 manual review. Outputs stayed in a scratch directory and are not part of the repository.
+
+## Rebuilt xref tool
+
+2026-10-21: the xref source in `tools/xref` was built with Maven (jadx 1.5.1 pinned).
+On the same scoped APK, the rebuilt jar and the original jar produced identical
+stdout and exit codes for `xrefs-to-method`, `xrefs-to-class`, `search-classes` and
+`inspect-class`. The `-d` argument accepts an APK file, as the recovered source
+shows (`JadxLoader.findInputFile`).
