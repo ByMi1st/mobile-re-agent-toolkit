@@ -6,8 +6,8 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
-from mrat.java_hook import generate_java_hook
-from mrat.model import JavaMethodSpec
+from mrat.runtime.java_hook import generate_java_hook
+from mrat.core.model import JavaMethodSpec
 
 @unittest.skipUnless(shutil.which('node'), 'Node.js required for synthetic JS check')
 class ProbeRuntimeTest(unittest.TestCase):

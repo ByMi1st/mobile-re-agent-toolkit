@@ -33,7 +33,7 @@ def main():
         str(ROOT/'examples/native/library.c'), '-o',str(lib)],check=True)
     subprocess.run([compiler,str(ROOT/'examples/native/driver.c'),'-L'+str(work),
         '-lmrat_fixture','-Wl,-rpath,'+str(work),'-o',str(exe)],check=True)
-    from mrat.native_hook import NativeProbeSpec, generate_native_hook
+    from mrat.runtime.native_hook import NativeProbeSpec, generate_native_hook
     probe=work/'probe.js'
     probe.write_text(generate_native_hook(NativeProbeSpec(name,symbol='mrat_add',
         arg_count=3,buffer_arg=2,buffer_size=4)))

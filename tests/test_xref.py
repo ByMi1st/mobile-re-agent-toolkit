@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
 from mrat.cli import main
-from mrat.xref import xref_method
+from mrat.static.xref import xref_method
 
 
 def write_java_stub(directory, record, *, exit_code=0, sleep=0):

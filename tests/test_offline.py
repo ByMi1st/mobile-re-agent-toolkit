@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
-from mrat.offline import fingerprint, search_exports, summarize_events
+from mrat.core.offline import fingerprint, search_exports, summarize_events
 
 class OfflineTest(unittest.TestCase):
     def test_fingerprint(self):

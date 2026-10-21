@@ -6,16 +6,16 @@ import argparse
 import json
 from pathlib import Path
 
-from .binary_diff import diff_binary
-from .decompile import decompile_class
-from .ida import ida_run
-from .xref import xref_method
-from .dex import locate_dex, scope_apk
-from .java_hook import generate_java_hook
-from .model import JavaMethodSpec, ProbeContext
-from .native_hook import NativeProbeSpec, generate_native_hook
-from .runner import RunSpec, capture
-from .offline import fingerprint, search_exports, summarize_events
+from .static.binary_diff import diff_binary
+from .static.decompile import decompile_class
+from .static.ida import ida_run
+from .static.xref import xref_method
+from .static.dex import locate_dex, scope_apk
+from .runtime.java_hook import generate_java_hook
+from .core.model import JavaMethodSpec, ProbeContext
+from .runtime.native_hook import NativeProbeSpec, generate_native_hook
+from .runtime.runner import RunSpec, capture
+from .core.offline import fingerprint, search_exports, summarize_events
 
 
 def build_parser() -> argparse.ArgumentParser:

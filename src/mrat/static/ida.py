@@ -5,7 +5,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from .offline import fingerprint
+from ..core.offline import fingerprint
 
 
 def resolve_idat(explicit: str | None) -> str:

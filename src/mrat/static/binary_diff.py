@@ -5,7 +5,7 @@ import hashlib
 import struct
 from pathlib import Path
 
-from .offline import fingerprint
+from ..core.offline import fingerprint
 
 SHT_NOBITS = 8
 

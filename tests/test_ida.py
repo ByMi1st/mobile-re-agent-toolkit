@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
 from mrat.cli import main
-from mrat.ida import ida_run
+from mrat.static.ida import ida_run
 
 
 def write_idat_stub(directory, record, *, exit_code=0, sleep=0, write_log=True):

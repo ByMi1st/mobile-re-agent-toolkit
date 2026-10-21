@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
-from mrat.binary_diff import diff_binary, parse_elf_sections
+from mrat.static.binary_diff import diff_binary, parse_elf_sections
 from mrat.cli import main
 
 

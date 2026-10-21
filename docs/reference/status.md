@@ -23,7 +23,7 @@ and `run`.
   MRAT_TEST_APK and MRAT_TEST_CLASS are set. The synthetic DEX in the test suite is
   rejected by jadx, so a real sample is needed for that check.
 - IDA: not available in this environment; `ida-run` has no real-IDA test.
-- Frida: real-provider lanes are recorded in verification.md; Android devices are not tested.
+- Frida: real-provider lanes are recorded in [verification](verification.md); Android devices are not tested.
 
 ## Not implemented
 

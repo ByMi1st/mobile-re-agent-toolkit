@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from .offline import fingerprint
+from ..core.offline import fingerprint
 
 CLASS_NAME = re.compile(r'[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+')
 METHOD_NAME = re.compile(r'[A-Za-z_$<][\w$<>]*')

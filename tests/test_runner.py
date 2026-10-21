@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
-from mrat.runner import RunSpec, capture
-from mrat.native_hook import NativeProbeSpec, generate_native_hook
+from mrat.runtime.runner import RunSpec, capture
+from mrat.runtime.native_hook import NativeProbeSpec, generate_native_hook
 
 
 class Cancel:

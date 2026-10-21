@@ -6,8 +6,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from mrat.cli import main
-from mrat.java_hook import generate_java_hook
-from mrat.model import JavaMethodSpec, ProbeContext
+from mrat.runtime.java_hook import generate_java_hook
+from mrat.core.model import JavaMethodSpec, ProbeContext
 
 
 class JavaHookGeneratorTest(unittest.TestCase):

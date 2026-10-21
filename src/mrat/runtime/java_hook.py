@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from .model import JavaMethodSpec, ProbeContext
+from ..core.model import JavaMethodSpec, ProbeContext
 
 
 def _js(value: object) -> str:

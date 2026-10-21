@@ -7,7 +7,7 @@ import zipfile
 from contextlib import contextmanager
 from pathlib import Path
 
-from .offline import fingerprint
+from ..core.offline import fingerprint
 
 ROOT_DEX = re.compile(r'classes\d*\.dex')
 HEADER_SIZE = 0x70

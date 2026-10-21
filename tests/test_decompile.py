@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
 from mrat.cli import main
-from mrat.decompile import decompile_class
+from mrat.static.decompile import decompile_class
 
 
 def write_stub(directory, record, *, exit_code=0, sleep=0):

@@ -14,4 +14,4 @@ Before calling a release verified, check:
 - GitHub Actions results for that exact commit, not just workflow presence.
 - No private paths, captures, credentials, binaries or build products tracked.
 
-See verification.md for passing/failing/unverified platform distinctions.
+See [verification](verification.md) for passing/failing/unverified platform distinctions.

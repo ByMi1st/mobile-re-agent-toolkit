@@ -76,4 +76,4 @@ PYTHONPATH=src python scripts/verify_real.py
 
 该脚本只编译仓库内的合成 C 文件，创建临时目录，不连接手机。用真实 Frida 验证 spawn 与 attach，比较函数参数、返回 42 和包含 NUL/非 UTF-8 的 4 字节缓冲区，并读取 C 程序独立输出对账；确认 owned spawn 已退出，attach 和脚本错误均不终止外部进程。
 
-验证脚本要求 macOS/Linux、C 编译器及可用 Frida 权限，失败不会降级为假数据。成功报告在临时目录中；不要上传私人目标日志。本版本结果见 verification.md。
+验证脚本要求 macOS/Linux、C 编译器及可用 Frida 权限，失败不会降级为假数据。成功报告在临时目录中；不要上传私人目标日志。本版本结果见 [验证记录](../reference/verification.md)。

@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
 from mrat.cli import main
-from mrat.dex import class_descriptor, locate_dex, scope_apk
+from mrat.static.dex import class_descriptor, locate_dex, scope_apk
 
 
 def build_dex(classes=(), extra_strings=()):

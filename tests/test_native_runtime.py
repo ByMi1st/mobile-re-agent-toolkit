@@ -4,7 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
-from mrat.native_hook import NativeProbeSpec, generate_native_hook
+from mrat.runtime.native_hook import NativeProbeSpec, generate_native_hook
 
 HARNESS=r'''
 const assert=require('assert');const events=[];let callbacks;
