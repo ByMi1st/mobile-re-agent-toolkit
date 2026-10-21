@@ -1,0 +1,2 @@
+{"schema_version":1,"event":"probe_ready","synthetic":true}
+{"schema_version":1,"event":"java_method_invocation","synthetic":true,"invocation_id":"demo:1","observation_mode":"controlled"}
