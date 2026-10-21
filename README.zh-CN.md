@@ -89,7 +89,14 @@ mrat generate-java-hook \
 
 ## 自备的工具
 
-仓库不附带 jadx、IDA、Frida、xref.jar 或任何应用样本。你需要自己安装或获取它们，并负责它们的许可证和版本。通过 `--jadx`、`--jar`、`--idat`、`--java` 等参数显式指定路径；如果不传，命令会去 `PATH` 里找，找不到就明确报错。xref.jar 也可以用环境变量 `MRAT_XREF_JAR` 设置一次。
+仓库不附带 jadx、IDA、Frida 或任何应用样本。`tools/xref` 里是 xref 工具的源码，需要用 Maven 自行构建（需要 JDK 11+）：
+
+```bash
+mvn -f tools/xref/pom.xml package
+export MRAT_XREF_JAR="$PWD/tools/xref/target/jadx-xrefs-cli.jar"
+```
+
+构建固定使用 jadx 1.5.1，调用的子命令与包装里的一致。你需要自己安装或获取它们，并负责它们的许可证和版本。通过 `--jadx`、`--jar`、`--idat`、`--java` 等参数显式指定路径；如果不传，命令会去 `PATH` 里找，找不到就明确报错。xref jar 的路径也可以用环境变量 `MRAT_XREF_JAR` 设置。
 
 ## 能证明什么，不能证明什么
 
@@ -109,6 +116,7 @@ docs/guides/      使用指南：工作流、运行时、安装
 docs/reference/   状态、架构、路线图、验证记录、发布清单
 examples/         仅包含合成样例
 scripts/          真实环境验证脚本
+tools/xref/      xref-method 使用的 xref 工具源码（Maven 构建）
 tests/            单元测试与合成测试
 ```
 

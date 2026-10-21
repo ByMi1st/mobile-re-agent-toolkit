@@ -98,12 +98,20 @@ generated script by hand.
 
 ## Bring your own tools
 
-This repository does not ship jadx, IDA, Frida, an xref jar, or any application
-samples. You install or obtain them yourself, and you are responsible for their
+This repository does not ship jadx, IDA, Frida, or any application samples. It does
+ship the source of the xref tool in `tools/xref`, which you build yourself with Maven
+(JDK 11+ required):
+
+```bash
+mvn -f tools/xref/pom.xml package
+export MRAT_XREF_JAR="$PWD/tools/xref/target/jadx-xrefs-cli.jar"
+```
+
+The build pins jadx 1.5.1 and uses the same subcommands the wrapper calls. You install or obtain them yourself, and you are responsible for their
 licenses and versions. Pass their paths explicitly, for example `--jadx`, `--jar`,
 `--idat` or `--java`. If you leave a flag out, the command looks for the tool on
-your `PATH` and fails clearly when it is not there. The xref jar can also be set
-once with the `MRAT_XREF_JAR` environment variable.
+your `PATH` and fails clearly when it is not there. The xref jar path can also be set
+with the `MRAT_XREF_JAR` environment variable.
 
 ## What it can and cannot establish
 
@@ -137,6 +145,7 @@ docs/guides/      how-to guides: workflow, runtime, setup
 docs/reference/   status, architecture, roadmap, verification, checklist
 examples/         synthetic fixtures only
 scripts/          real-provider verification scripts
+tools/xref/      source for the xref jar used by xref-method (Maven)
 tests/            unit and synthetic tests
 ```
 
