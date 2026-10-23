@@ -81,6 +81,9 @@ def locate_dex(apk: Path, *, class_name: str | None = None, text: str | None = N
     descriptor = class_descriptor(class_name) if class_name is not None else None
     results = []
     with _open_apk(apk) as archive:
+        all_dex = [i.filename for i in archive.infolist() if i.filename.endswith('.dex')]
+        skipped = [{'name': n, 'reason': 'not a root classes*.dex entry'}
+                   for n in all_dex if not ROOT_DEX.fullmatch(n)]
         for name in _root_dex_names(archive):
             parsed = parse_dex(archive.read(name))
             entry = {'name': name, 'size': archive.getinfo(name).file_size}
@@ -100,7 +103,9 @@ def locate_dex(apk: Path, *, class_name: str | None = None, text: str | None = N
         'dex': results,
         'candidates': [r['name'] for r in results
                        if r.get('defines') or r.get('matched_string_count')],
-        'coverage': 'complete',
+        'inspected_dex': [r['name'] for r in results],
+        'skipped_dex': skipped,
+        'coverage': 'partial' if skipped else 'complete',
         'limitations': [
             'only root classes*.dex entries are inspected',
             'text matches are substring matches in the DEX string table, not code references',

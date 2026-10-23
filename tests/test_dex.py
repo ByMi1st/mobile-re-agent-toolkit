@@ -85,6 +85,24 @@ class LocateDexTest(unittest.TestCase):
         self.assertEqual(by_name['classes2.dex']['matched_string_samples'], ['hello world'])
         self.assertEqual(result['candidates'], ['classes.dex', 'classes2.dex'])
 
+    def test_coverage_is_partial_when_dex_is_outside_root(self):
+        apk = self.root / 'assets.apk'
+        write_apk(apk, {
+            'classes.dex': build_dex(classes=['Lcom/example/App;']),
+            'assets/hidden.dex': build_dex(classes=['Lx/Y;']),
+        })
+        result = locate_dex(apk, class_name='com.example.App')
+        self.assertEqual(result['coverage'], 'partial')
+        self.assertEqual([s['name'] for s in result['skipped_dex']], ['assets/hidden.dex'])
+        self.assertEqual(result['inspected_dex'], ['classes.dex'])
+
+    def test_coverage_is_complete_when_all_dex_are_root(self):
+        apk = self.root / 'root_only.apk'
+        write_apk(apk, {'classes.dex': build_dex(classes=['Lcom/example/App;'])})
+        result = locate_dex(apk, class_name='com.example.App')
+        self.assertEqual(result['coverage'], 'complete')
+        self.assertEqual(result['skipped_dex'], [])
+
     def test_requires_exactly_one_query(self):
         with self.assertRaises(ValueError):
             locate_dex(self.apk)
