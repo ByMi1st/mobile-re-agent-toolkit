@@ -93,5 +93,24 @@ class CliNativeTest(CliTestBase):
         self.assertIn('buffer_arg', json.loads(text)['error'])
 
 
+class CliDoctorTest(unittest.TestCase):
+    def test_version_flag(self):
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer), self.assertRaises(SystemExit) as caught:
+            main(['--version'])
+        self.assertEqual(caught.exception.code, 0)
+        self.assertIn('mrat', buffer.getvalue())
+
+    def test_doctor_reports_each_tool(self):
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = main(['doctor'])
+        self.assertEqual(code, 0)
+        report = json.loads(buffer.getvalue())
+        names = {tool['name'] for tool in report['tools']}
+        self.assertEqual(names, {'jadx', 'java', 'idat', 'xref_jar', 'frida_python'})
+        self.assertEqual(report['operation'], 'doctor')
+
+
 if __name__ == '__main__':
     unittest.main()

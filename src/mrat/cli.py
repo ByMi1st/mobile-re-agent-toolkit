@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from . import __version__
 from .static.binary_diff import diff_binary
 from .static.decompile import decompile_class
 from .static.ida import ida_run
@@ -21,6 +22,7 @@ from .core.offline import fingerprint, search_exports, summarize_events
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="mrat")
+    parser.add_argument("--version", action="version", version=f"mrat {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     generate = subparsers.add_parser(
@@ -93,6 +95,7 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--jar", type=Path)
     serve.add_argument("--java")
     serve.add_argument("--heap", default="4g")
+    subparsers.add_parser("doctor", help="report which external tools are available")
     run = subparsers.add_parser("run", help="capture one script with explicit target and transport")
     transport = run.add_mutually_exclusive_group(required=True)
     transport.add_argument("--local", action="store_true")
@@ -151,6 +154,9 @@ def _run(argv: list[str] | None = None) -> int:
                     response = {"exit": 2, "error": f"bad request: {error}"}
                 print(json.dumps(response, ensure_ascii=False), flush=True)
         return 0
+    if args.command == "doctor":
+        print(json.dumps(doctor(), ensure_ascii=False, indent=2))
+        return 0
     if args.command == "run":
         spec = RunSpec(script=args.script, out=args.out, duration=args.duration,
             local=args.local, device_id=args.device_id, remote=args.remote,
@@ -204,6 +210,31 @@ def _run(argv: list[str] | None = None) -> int:
     raise AssertionError(f"unhandled command: {args.command}")
 
 
+def doctor() -> dict:
+    import importlib.util
+    import os
+    import shutil
+
+    def tool(name: str, path: str | None) -> dict:
+        return {'name': name, 'found': bool(path), 'path': path}
+
+    jar = os.environ.get('MRAT_XREF_JAR')
+    frida = importlib.util.find_spec('frida') is not None
+    return {
+        'schema_version': 1,
+        'operation': 'doctor',
+        'mrat_version': __version__,
+        'tools': [
+            tool('jadx', shutil.which('jadx')),
+            tool('java', shutil.which('java')),
+            tool('idat', shutil.which('idat') or shutil.which('idat64')),
+            tool('xref_jar', jar if jar and Path(jar).is_file() else None),
+            {'name': 'frida_python', 'found': frida, 'path': None},
+        ],
+        'limitations': ['presence only; tool versions and runtime behavior are not checked'],
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     try:
         return _run(argv)
@@ -214,4 +245,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
